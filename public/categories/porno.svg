@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 533" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="400" y2="533" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0a0612"/>
+      <stop offset="0.5" stop-color="#150d22"/>
+      <stop offset="1" stop-color="#0a0612"/>
+    </linearGradient>
+    <filter id="blur1"><feGaussianBlur stdDeviation="35"/></filter>
+    <filter id="blur2"><feGaussianBlur stdDeviation="50"/></filter>
+    <linearGradient id="fade" x1="200" y1="353" x2="200" y2="533" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0a0612" stop-opacity="0"/>
+      <stop offset="1" stop-color="#0a0612" stop-opacity="0.95"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="6" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="400" height="533" fill="url(#bg)"/>
+  <circle cx="120" cy="180" r="80" fill="#7c3aed" opacity="0.25" filter="url(#blur1)"/>
+  <circle cx="280" cy="220" r="90" fill="#db2777" opacity="0.2" filter="url(#blur1)"/>
+  <circle cx="200" cy="320" r="100" fill="#9333ea" opacity="0.18" filter="url(#blur2)"/>
+  <circle cx="320" cy="380" r="60" fill="#a855f7" opacity="0.15" filter="url(#blur1)"/>
+  <rect width="400" height="533" fill="#0a0612" opacity="0.4"/>
+  <text x="200" y="290" text-anchor="middle" fill="#b57bff" font-size="120" font-weight="bold" font-family="Arial,sans-serif" opacity="0.95" filter="url(#glow)">18+</text>
+  <rect width="400" height="180" y="353" fill="url(#fade)"/>
+</svg>

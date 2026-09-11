@@ -1,0 +1,1503 @@
+/* ── Eagle Flight (crash-style) ── */
+
+.eagle-flight-arena-wrap {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 12px;
+  container-type: size;
+}
+
+.eagle-flight-arena {
+  position: relative;
+  width: min(95cqw, 95cqh, 95%);
+  height: min(95cqw, 95cqh);
+  max-width: 100%;
+  max-height: 100%;
+  aspect-ratio: 1;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #0369a1;
+  box-shadow: inset 0 0 40px rgba(14, 165, 233, 0.15);
+  isolation: isolate;
+  flex-shrink: 0;
+  container-type: inline-size;
+}
+
+.eagle-flight-bg-video {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  background: #0369a1;
+}
+
+/* ── Boucle nuages (2 tuiles identiques, couture invisible) ── */
+
+.eagle-flight-scenery {
+  position: absolute;
+  inset: 0 auto auto 0;
+  z-index: 1;
+  width: 100%;
+  height: 200%;
+  will-change: transform;
+}
+
+.eagle-flight-arena-active.eagle-flight-in-scenery .eagle-flight-scenery {
+  animation: eagle-flight-scenery-fall calc(42s / var(--ef-speed, 0.26)) linear infinite;
+}
+
+.eagle-flight-helicopters {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.eagle-flight-helicopter {
+  position: absolute;
+  width: 52px;
+  height: 22px;
+}
+
+.eagle-flight-helicopter::before {
+  content: "";
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  translate: -50% 0;
+  width: 58px;
+  height: 3px;
+  background: rgba(30, 41, 59, 0.65);
+  border-radius: 2px;
+  transform-origin: center;
+  animation: eagle-flight-heli-blades 0.1s linear infinite;
+}
+
+.eagle-flight-helicopter::after {
+  content: "";
+  position: absolute;
+  inset: 5px 0 0;
+  background: linear-gradient(180deg, #64748b 0%, #475569 100%);
+  border-radius: 8px 14px 5px 5px;
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.15);
+}
+
+.eagle-flight-arena-active .eagle-flight-helicopter {
+  animation: eagle-flight-heli-drift calc(14s / var(--ef-speed, 0.26)) ease-in-out infinite;
+}
+
+.eagle-flight-in-high-altitude .eagle-flight-balloon {
+  width: 20px;
+  height: 24px;
+}
+
+@keyframes eagle-flight-heli-blades {
+  to { rotate: 360deg; }
+}
+
+@keyframes eagle-flight-heli-drift {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 12px -6px; }
+}
+
+.eagle-flight-sky-tile {
+  position: relative;
+  height: 50%;
+  width: 100%;
+  pointer-events: none;
+}
+
+.eagle-flight-clouds {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.eagle-flight-cloud {
+  position: absolute;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+.eagle-flight-cloud-puff::before,
+.eagle-flight-cloud-puff::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  background: inherit;
+}
+
+.eagle-flight-cloud-puff::before {
+  width: 55%;
+  height: 80%;
+  top: -35%;
+  left: 12%;
+}
+
+.eagle-flight-cloud-puff::after {
+  width: 42%;
+  height: 65%;
+  top: -20%;
+  right: 8%;
+}
+
+.eagle-flight-arena-active .eagle-flight-cloud {
+  animation: eagle-flight-cloud-sway calc(24s / var(--ef-speed, 0.26)) ease-in-out infinite;
+}
+
+.eagle-flight-birds {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.eagle-flight-bird {
+  position: absolute;
+  width: 14px;
+  height: 5px;
+  opacity: 0.55;
+}
+
+.eagle-flight-bird::before,
+.eagle-flight-bird::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid rgba(30, 41, 59, 0.55);
+  border-radius: 50% 50% 0 0;
+}
+
+.eagle-flight-bird::before {
+  left: 0;
+  transform: rotate(-28deg);
+}
+
+.eagle-flight-bird::after {
+  right: 0;
+  transform: rotate(28deg);
+}
+
+.eagle-flight-arena-active .eagle-flight-bird {
+  animation: eagle-flight-bird-flap calc(2.4s / var(--ef-speed, 0.26)) ease-in-out infinite;
+}
+
+.eagle-flight-balloons {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.eagle-flight-balloon {
+  position: absolute;
+  width: 16px;
+  height: 20px;
+  border-radius: 50% 50% 45% 45%;
+  background: var(--ef-balloon, #f472b6);
+  box-shadow: inset -3px -3px 8px rgba(0, 0, 0, 0.12);
+  opacity: 0.75;
+}
+
+.eagle-flight-balloon::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  translate: -50% 0;
+  width: 1px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.eagle-flight-arena-active .eagle-flight-balloon {
+  animation: eagle-flight-balloon-sway calc(18s / var(--ef-speed, 0.26)) ease-in-out infinite;
+}
+
+@keyframes eagle-flight-scenery-fall {
+  from {
+    transform: translate3d(0, -50%, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes eagle-flight-cloud-sway {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 8px 0; }
+}
+
+.eagle-flight-parallax {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.eagle-flight-layer {
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: calc(var(--ef-strip-units, 72) * 100%);
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.eagle-flight-strip-haze {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.035) 0%,
+    transparent 4%,
+    transparent 96%,
+    rgba(255, 255, 255, 0.025) 100%
+  );
+  pointer-events: none;
+}
+
+.eagle-flight-layer-far {
+  z-index: 1;
+}
+
+.eagle-flight-layer-mid {
+  z-index: 2;
+}
+
+.eagle-flight-layer-near {
+  z-index: 3;
+}
+
+.eagle-flight-clouds {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: var(--ef-cloud-opacity, 1);
+}
+
+.eagle-flight-cloud {
+  position: absolute;
+  border-radius: 999px;
+  width: clamp(52px, calc(var(--cloud-w, 80) * 0.3cqw), 168px);
+  height: clamp(18px, calc(var(--cloud-h, 28) * 0.3cqw), 58px);
+  opacity: var(--cloud-o, 1);
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 0 24px rgba(255, 255, 255, 0.28);
+}
+
+.eagle-flight-cloud-far {
+  filter: blur(2px);
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.15);
+}
+
+.eagle-flight-cloud-mid {
+  filter: blur(0.8px);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.eagle-flight-cloud-near {
+  filter: blur(0.2px);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 0 28px rgba(255, 255, 255, 0.32);
+}
+
+.eagle-flight-arena-active .eagle-flight-cloud {
+  animation: eagle-flight-cloud-sway calc(28s / var(--ef-speed, 0.26)) ease-in-out infinite;
+}
+
+.eagle-flight-arena-active .eagle-flight-cloud-far {
+  animation-duration: calc(36s / var(--ef-speed, 0.26));
+}
+
+.eagle-flight-arena-active .eagle-flight-cloud-near {
+  animation-duration: calc(20s / var(--ef-speed, 0.26));
+}
+
+.eagle-flight-cloud-puff::before,
+.eagle-flight-cloud-puff::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  background: inherit;
+  filter: blur(1px);
+}
+
+.eagle-flight-cloud-puff::before {
+  width: 55%;
+  height: 80%;
+  top: -35%;
+  left: 12%;
+}
+
+.eagle-flight-cloud-puff::after {
+  width: 42%;
+  height: 65%;
+  top: -20%;
+  right: 8%;
+}
+
+.eagle-flight-birds {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: var(--ef-bird-opacity, 1);
+}
+
+.eagle-flight-bird {
+  position: absolute;
+  width: 14px;
+  height: 5px;
+  opacity: 0.55;
+}
+
+.eagle-flight-bird::before,
+.eagle-flight-bird::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid rgba(30, 41, 59, 0.55);
+  border-radius: 50% 50% 0 0;
+}
+
+.eagle-flight-bird::before {
+  left: 0;
+  transform: rotate(-28deg);
+}
+
+.eagle-flight-bird::after {
+  right: 0;
+  transform: rotate(28deg);
+}
+
+.eagle-flight-arena-active .eagle-flight-bird {
+  animation: eagle-flight-bird-flap calc(2.4s / var(--ef-speed, 0.26)) ease-in-out infinite;
+}
+
+.eagle-flight-balloons {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: var(--ef-balloon-opacity, 0);
+}
+
+.eagle-flight-balloon {
+  position: absolute;
+  width: 16px;
+  height: 20px;
+  border-radius: 50% 50% 45% 45%;
+  background: var(--ef-balloon, #f472b6);
+  box-shadow: inset -3px -3px 8px rgba(0, 0, 0, 0.12);
+  opacity: 0.75;
+}
+
+.eagle-flight-balloon::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  translate: -50% 0;
+  width: 1px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.eagle-flight-arena-active .eagle-flight-balloon {
+  animation: eagle-flight-balloon-sway calc(18s / var(--ef-speed, 0.26)) ease-in-out infinite;
+}
+
+.eagle-flight-wind {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: var(--ef-wind-intensity, 0.5);
+}
+
+.eagle-flight-wind-line {
+  position: absolute;
+  left: 50%;
+  width: 2px;
+  height: 32%;
+  border-radius: 999px;
+  background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+  opacity: 0;
+  animation: eagle-flight-wind-fall calc(1.35s / var(--ef-speed, 0.26)) linear infinite;
+}
+
+.eagle-flight-wind-line-1 {
+  margin-left: -42%;
+  animation-delay: 0s;
+}
+
+.eagle-flight-wind-line-2 {
+  margin-left: -14%;
+  animation-delay: 0.25s;
+}
+
+.eagle-flight-wind-line-3 {
+  margin-left: 18%;
+  animation-delay: 0.5s;
+}
+
+.eagle-flight-wind-line-4 {
+  margin-left: 46%;
+  animation-delay: 0.75s;
+}
+
+.eagle-flight-wind-line-5 {
+  margin-left: -28%;
+  animation-delay: 1s;
+  height: 22%;
+  opacity: 0.35;
+}
+
+.eagle-flight-wind-line-6 {
+  margin-left: 32%;
+  animation-delay: 1.35s;
+  height: 24%;
+  opacity: 0.3;
+}
+
+.eagle-flight-wind-line-7 {
+  margin-left: -52%;
+  animation-delay: 0.45s;
+  height: 18%;
+  width: 1px;
+  opacity: 0.25;
+}
+
+.eagle-flight-wind-line-8 {
+  margin-left: 52%;
+  animation-delay: 0.9s;
+  height: 16%;
+  width: 1px;
+  opacity: 0.22;
+}
+
+.eagle-flight-multiplier-display {
+  position: absolute;
+  top: 14%;
+  left: 50%;
+  translate: -50% 0;
+  z-index: 4;
+  text-align: center;
+  pointer-events: none;
+}
+
+.eagle-flight-multiplier-value {
+  font-family: var(--font-display, inherit);
+  font-size: clamp(1.8rem, 12cqw, 3.2rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #fff;
+  text-shadow:
+    0 0 24px rgba(56, 189, 248, 0.55),
+    0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+.eagle-flight-arena-active .eagle-flight-multiplier-value {
+  animation: eagle-flight-mult-pulse 1.2s ease-in-out infinite;
+}
+
+.eagle-flight-eagle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.eagle-flight-eagle-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  width: min(34cqw, 160px);
+  height: min(34cqw, 160px);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(250, 204, 21, 0.28) 0%, rgba(56, 189, 248, 0.12) 45%, transparent 72%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.eagle-flight-eagle-flying .eagle-flight-eagle-glow {
+  opacity: 1;
+  animation: eagle-flight-glow-pulse 1.6s ease-in-out infinite;
+}
+
+.eagle-flight-eagle-logo {
+  position: relative;
+  z-index: 1;
+  width: min(24cqw, 120px);
+  height: min(24cqw, 120px);
+  object-fit: contain;
+  transform-origin: center center;
+}
+
+.eagle-flight-eagle-flying .eagle-flight-eagle-logo {
+  animation: eagle-flight-soar 1.4s ease-in-out infinite;
+}
+
+.eagle-flight-trail {
+  position: absolute;
+  top: 54%;
+  left: 50%;
+  z-index: 0;
+  width: min(16cqw, 64px);
+  height: min(32cqw, 148px);
+  translate: -50% 0;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.eagle-flight-eagle-flying .eagle-flight-trail {
+  opacity: 1;
+}
+
+.eagle-flight-trail-core,
+.eagle-flight-trail-mist {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  translate: -50% 0;
+  pointer-events: none;
+}
+
+.eagle-flight-trail-mist {
+  width: 100%;
+  height: 100%;
+  transform-origin: top center;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.38) 0%,
+    rgba(186, 230, 253, 0.22) 22%,
+    rgba(125, 211, 252, 0.08) 58%,
+    transparent 100%
+  );
+  clip-path: polygon(38% 0, 62% 0, 100% 100%, 0 100%);
+  filter: blur(7px);
+}
+
+.eagle-flight-trail-core {
+  width: 38%;
+  height: 78%;
+  transform-origin: top center;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(224, 242, 254, 0.55) 16%,
+    rgba(125, 211, 252, 0.18) 48%,
+    transparent 100%
+  );
+  clip-path: polygon(42% 0, 58% 0, 78% 100%, 22% 100%);
+  filter: blur(1.4px);
+}
+
+.eagle-flight-eagle-flying .eagle-flight-trail-mist {
+  animation: eagle-flight-trail-sway 1.8s ease-in-out infinite;
+}
+
+.eagle-flight-eagle-flying .eagle-flight-trail-core {
+  animation: eagle-flight-trail-flow 1.15s ease-in-out infinite;
+}
+
+.eagle-flight-trail-spark {
+  position: absolute;
+  left: 50%;
+  width: 3px;
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(186, 230, 253, 0));
+  filter: blur(0.4px);
+  opacity: 0;
+}
+
+.eagle-flight-eagle-flying .eagle-flight-trail-spark {
+  animation: eagle-flight-trail-spark 0.85s linear infinite;
+}
+
+.eagle-flight-trail-spark-1 {
+  animation-delay: 0s;
+  margin-left: -4px;
+}
+
+.eagle-flight-trail-spark-2 {
+  animation-delay: 0.2s;
+  margin-left: 5px;
+  width: 2px;
+  height: 8px;
+}
+
+.eagle-flight-trail-spark-3 {
+  animation-delay: 0.42s;
+  margin-left: -8px;
+  width: 2px;
+  height: 7px;
+}
+
+.eagle-flight-trail-spark-4 {
+  animation-delay: 0.64s;
+  margin-left: 3px;
+}
+
+.eagle-flight-eagle-crashed .eagle-flight-eagle-logo {
+  animation: eagle-flight-eagle-hit 0.75s cubic-bezier(0.36, 0.07, 0.19, 0.97) forwards;
+}
+
+.eagle-flight-jet {
+  position: absolute;
+  top: 47%;
+  left: 50%;
+  z-index: 8;
+  width: min(72cqw, 340px);
+  height: auto;
+  transform: translate(120%, -50%);
+  animation: eagle-flight-jet-strike 0.75s cubic-bezier(0.45, 0.05, 0.2, 1) forwards;
+  filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.38));
+  pointer-events: none;
+}
+
+.eagle-flight-jet-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.eagle-flight-impact-flash {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  background: radial-gradient(circle at 52% 50%, rgba(255, 255, 255, 0.85) 0%, rgba(248, 113, 113, 0.45) 25%, transparent 55%);
+  pointer-events: none;
+  animation: eagle-flight-impact-flash 0.75s ease-out forwards;
+}
+
+.eagle-flight-arena-crashed {
+  animation: eagle-flight-arena-shake 0.55s ease-out;
+}
+
+.eagle-flight-eagle-crashed .eagle-flight-eagle-glow {
+  opacity: 1;
+  background: radial-gradient(circle, rgba(248, 113, 113, 0.45) 0%, rgba(127, 29, 29, 0.2) 50%, transparent 72%);
+  animation: eagle-flight-crash-flash-glow 0.65s ease-out forwards;
+}
+
+.eagle-flight-eagle-crashed .eagle-flight-trail {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.eagle-flight-arena-crashed::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: linear-gradient(180deg, rgba(127, 29, 29, 0.55) 0%, rgba(69, 10, 10, 0.75) 100%);
+  pointer-events: none;
+  animation: eagle-flight-crash-flash 0.55s ease-out forwards;
+}
+
+.eagle-flight-confetti {
+  position: absolute;
+  inset: -20%;
+  z-index: 7;
+  pointer-events: none;
+}
+
+.eagle-flight-confetti-piece {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 1px;
+  animation-name: eagle-flight-confetti-burst;
+  animation-timing-function: cubic-bezier(0.08, 0.82, 0.2, 1);
+  animation-fill-mode: forwards;
+}
+
+@keyframes eagle-flight-confetti-burst {
+  0% {
+    opacity: 1;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%) rotate(0deg) scale(0.6);
+  }
+  18% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(90deg) scale(1.15);
+  }
+  100% {
+    opacity: 0;
+    left: var(--ef-confetti-left, 50%);
+    top: var(--ef-confetti-top, 50%);
+    transform: translate(-50%, -50%) rotate(var(--ef-confetti-rotate, 240deg)) scale(0.9);
+  }
+}
+
+.eagle-flight-crash-badge {
+  position: absolute;
+  bottom: 12%;
+  left: 50%;
+  translate: -50% 0;
+  z-index: 6;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(248, 113, 113, 0.45);
+  color: #fecaca;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.eagle-flight-cashout-btn:not(:disabled) {
+  background: linear-gradient(135deg, rgba(74, 222, 128, 0.25) 0%, rgba(22, 163, 74, 0.35) 100%);
+  border-color: rgba(74, 222, 128, 0.35);
+}
+
+.eagle-flight-cashout-at-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.eagle-flight-cashout-at-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.eagle-flight-cashout-at-input-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.eagle-flight-cashout-at-input {
+  width: 100%;
+  padding: 12px 36px 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.28);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  outline: none;
+  transition: border-color 0.12s ease;
+}
+
+.eagle-flight-cashout-at-suffix {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  translate: 0 -50%;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 15px;
+  font-weight: 800;
+  pointer-events: none;
+}
+
+.eagle-flight-cashout-at-input:focus {
+  border-color: rgba(181, 123, 255, 0.4);
+}
+
+.eagle-flight-cashout-at-input:disabled {
+  cursor: not-allowed;
+}
+
+.eagle-flight-cashout-at-input-wrap:has(input:disabled) {
+  opacity: 0.5;
+}
+
+.eagle-flight-panel-bet-mobile {
+  display: none;
+}
+
+.eagle-flight-auto-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.eagle-flight-mobile-actions {
+  display: none;
+}
+
+@keyframes eagle-flight-cloud-sway {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(8px);
+  }
+}
+
+@keyframes eagle-flight-bird-flap {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.72;
+  }
+}
+
+@keyframes eagle-flight-balloon-sway {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-5px);
+  }
+}
+
+@keyframes eagle-flight-wind-fall {
+  0% {
+    top: -40%;
+    opacity: 0;
+    transform: translateX(0) scaleY(0.85);
+  }
+  12% {
+    opacity: 0.5;
+  }
+  100% {
+    top: 115%;
+    opacity: 0;
+    transform: translateX(-8px) scaleY(1.08);
+  }
+}
+
+@keyframes eagle-flight-soar {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-6deg) scale(1);
+  }
+  35% {
+    transform: translateY(-7px) rotate(2deg) scale(1.03);
+  }
+  70% {
+    transform: translateY(-3px) rotate(6deg) scale(1.01);
+  }
+}
+
+@keyframes eagle-flight-glow-pulse {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(0.92);
+    opacity: 0.75;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.08);
+    opacity: 1;
+  }
+}
+
+@keyframes eagle-flight-trail-sway {
+  0%,
+  100% {
+    transform: translateX(-2px) scaleY(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateX(3px) scaleY(1.08);
+    opacity: 0.95;
+  }
+}
+
+@keyframes eagle-flight-trail-flow {
+  0%,
+  100% {
+    transform: scaleY(0.92);
+    opacity: 0.75;
+  }
+  50% {
+    transform: scaleY(1.12);
+    opacity: 1;
+  }
+}
+
+@keyframes eagle-flight-trail-spark {
+  0% {
+    top: 8%;
+    opacity: 0;
+    transform: translateX(-50%) scaleY(0.6);
+  }
+  18% {
+    opacity: 0.9;
+  }
+  100% {
+    top: 88%;
+    opacity: 0;
+    transform: translateX(-50%) scaleY(1.4);
+  }
+}
+
+@keyframes eagle-flight-mult-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04);
+  }
+}
+
+@keyframes eagle-flight-crash-spin {
+  0% {
+    transform: translateY(0) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(18px) rotate(120deg) scale(0.82);
+    opacity: 0.35;
+  }
+}
+
+@keyframes eagle-flight-eagle-hit {
+  0% {
+    transform: translate(0, 0) rotate(-6deg) scale(1);
+    opacity: 1;
+  }
+  35% {
+    transform: translate(-6px, 2px) rotate(-12deg) scale(1);
+    opacity: 1;
+  }
+  55% {
+    transform: translate(-38px, 10px) rotate(-58deg) scale(0.88);
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate(-52px, 28px) rotate(-108deg) scale(0.72);
+    opacity: 0.35;
+  }
+}
+
+@keyframes eagle-flight-jet-strike {
+  0% {
+    transform: translate(120%, -50%) rotate(4deg);
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  52% {
+    transform: translate(-18%, -50%) rotate(-2deg);
+  }
+  100% {
+    transform: translate(-22%, -46%) rotate(-3deg);
+  }
+}
+
+@keyframes eagle-flight-impact-flash {
+  0% {
+    opacity: 0;
+  }
+  45% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes eagle-flight-arena-shake {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  20% {
+    transform: translate(-5px, 3px);
+  }
+  40% {
+    transform: translate(6px, -2px);
+  }
+  60% {
+    transform: translate(-4px, 2px);
+  }
+  80% {
+    transform: translate(3px, -1px);
+  }
+}
+
+@keyframes eagle-flight-crash-flash-glow {
+  0% {
+    opacity: 0.2;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  40% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+  100% {
+    opacity: 0.6;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes eagle-flight-shake {
+  0%,
+  100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  20% {
+    transform: translateX(-6px) rotate(-8deg);
+  }
+  40% {
+    transform: translateX(6px) rotate(8deg);
+  }
+  60% {
+    transform: translateX(-4px) rotate(-5deg);
+  }
+  80% {
+    transform: translateX(4px) rotate(5deg);
+  }
+}
+
+@keyframes eagle-flight-crash-flash {
+  0% {
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.85;
+  }
+}
+
+/* ── Sol fixe en bas (disparaît en montant) ── */
+
+.eagle-flight-ground-fixed {
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 2;
+  width: 100%;
+  height: 42%;
+  will-change: transform;
+  backface-visibility: hidden;
+  pointer-events: none;
+}
+
+.eagle-flight-ground-layer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: var(--ef-ground-opacity, 1);
+  pointer-events: none;
+}
+
+.eagle-flight-ground-hills {
+  position: absolute;
+  bottom: 22%;
+  inset-inline: 0;
+  height: 28%;
+  background: linear-gradient(180deg, #4ade80 0%, #22c55e 55%, #15803d 100%);
+  border-radius: 50% 50% 0 0 / 20% 20% 0 0;
+  opacity: 0.85;
+}
+
+.eagle-flight-ground-grass {
+  position: absolute;
+  bottom: 0;
+  inset-inline: 0;
+  height: 24%;
+  background: linear-gradient(180deg, #65a30d 0%, #3f6212 100%);
+}
+
+.eagle-flight-ground-trees {
+  position: absolute;
+  bottom: 20%;
+  inset-inline: 0;
+  height: 22%;
+  opacity: var(--ef-trees-opacity, 1);
+}
+
+.eagle-flight-tree {
+  position: absolute;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 28px solid #166534;
+}
+
+.eagle-flight-tree::after {
+  content: "";
+  position: absolute;
+  bottom: -34px;
+  left: 50%;
+  translate: -50% 0;
+  width: 4px;
+  height: 14px;
+  background: #422006;
+  border-radius: 2px;
+}
+
+.eagle-flight-tree-1 { left: 8%; }
+.eagle-flight-tree-2 { left: 22%; transform: scale(0.85); }
+.eagle-flight-tree-3 { left: 72%; transform: scale(1.1); }
+.eagle-flight-tree-4 { left: 84%; transform: scale(0.75); }
+.eagle-flight-tree-5 { left: 48%; transform: scale(0.9); }
+
+.eagle-flight-ground-buildings {
+  position: absolute;
+  bottom: 18%;
+  inset-inline: 0;
+  height: 20%;
+  opacity: var(--ef-buildings-opacity, 1);
+}
+
+.eagle-flight-house {
+  position: absolute;
+  bottom: 0;
+  background: #e2e8f0;
+  border-radius: 2px 2px 0 0;
+  box-shadow: inset -2px 0 0 rgba(0, 0, 0, 0.08);
+}
+
+.eagle-flight-house::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  translate: -50% 0;
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-bottom: 12px solid #94a3b8;
+}
+
+.eagle-flight-house-1 { left: 14%; width: 28px; height: 32px; }
+.eagle-flight-house-2 { left: 32%; width: 22px; height: 24px; opacity: 0.9; }
+.eagle-flight-house-3 { left: 58%; width: 34px; height: 38px; }
+.eagle-flight-house-4 { left: 76%; width: 26px; height: 28px; }
+
+/* ── Atmosphère & espace ── */
+
+.eagle-flight-stars {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: var(--ef-star-opacity, 0);
+}
+
+.eagle-flight-star {
+  position: absolute;
+  width: var(--ef-star-size, 2px);
+  height: var(--ef-star-size, 2px);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.6);
+  animation: eagle-flight-star-twinkle 3s ease-in-out infinite;
+}
+
+.eagle-flight-atmo-veil {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: var(--ef-atmo-veil, 0);
+  background: radial-gradient(ellipse at 50% 80%, rgba(56, 189, 248, 0.12) 0%, transparent 55%);
+  transition: opacity 0.6s ease;
+}
+
+.eagle-flight-atmo-fog {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: var(--ef-fog-opacity, 0);
+  background: linear-gradient(180deg, transparent 40%, rgba(148, 163, 184, 0.08) 100%);
+  transition: opacity 0.5s ease;
+}
+
+.eagle-flight-earth {
+  position: absolute;
+  bottom: -55%;
+  left: 50%;
+  z-index: 0;
+  translate: -50% 0;
+  scale: var(--ef-earth-scale, 1.4);
+  width: 140%;
+  aspect-ratio: 1;
+  opacity: var(--ef-earth-opacity, 0);
+  transition: opacity 0.7s ease, scale 0.7s ease;
+  pointer-events: none;
+}
+
+.eagle-flight-earth-surface {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, #22c55e 0%, transparent 28%),
+    radial-gradient(circle at 60% 45%, #0369a1 0%, transparent 35%),
+    radial-gradient(circle at 45% 55%, #15803d 0%, transparent 30%),
+    linear-gradient(180deg, #1d4ed8 0%, #0c4a6e 40%, #020617 100%);
+  box-shadow:
+    inset 0 0 40px rgba(0, 0, 0, 0.4),
+    0 0 60px rgba(56, 189, 248, 0.15);
+}
+
+.eagle-flight-earth-glow {
+  position: absolute;
+  inset: -8%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.2) 0%, transparent 65%);
+}
+
+.eagle-flight-space-particles {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: var(--ef-particle-opacity, 0);
+  transition: opacity 0.5s ease;
+}
+
+.eagle-flight-space-particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  animation: eagle-flight-particle-drift calc(12s / var(--ef-speed, 0.26)) ease-in-out infinite;
+}
+
+.eagle-flight-meteors {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.eagle-flight-meteor {
+  position: absolute;
+  width: 48px;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.85) 0%, transparent 100%);
+  transform: rotate(-32deg);
+  animation: eagle-flight-meteor-streak calc(3.6s / var(--ef-speed, 0.26)) linear infinite;
+}
+
+.eagle-flight-meteor-1 {
+  top: 18%;
+  left: 72%;
+  animation-delay: 0s;
+}
+
+.eagle-flight-meteor-2 {
+  top: 42%;
+  left: 8%;
+  width: 36px;
+  animation-delay: 1.4s;
+  animation-duration: calc(4.8s / var(--ef-speed, 0.26));
+}
+
+.eagle-flight-meteor-3 {
+  top: 68%;
+  left: 58%;
+  width: 40px;
+  animation-delay: 2.6s;
+  animation-duration: calc(5.2s / var(--ef-speed, 0.26));
+}
+
+@keyframes eagle-flight-meteor-streak {
+  0% {
+    translate: 0 0;
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.9;
+  }
+  100% {
+    translate: -120px 70px;
+    opacity: 0;
+  }
+}
+
+/* ── Spawn ambiant (hélico, oiseaux dynamiques) ── */
+
+.eagle-flight-ambient-spawner {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.eagle-flight-ambient-entity {
+  position: absolute;
+  animation: eagle-flight-ambient-cross var(--ef-entity-duration, 8s) linear forwards;
+}
+
+.eagle-flight-ambient-from-left {
+  left: -15%;
+  animation-name: eagle-flight-ambient-cross-left;
+}
+
+.eagle-flight-ambient-from-right {
+  right: -15%;
+  animation-name: eagle-flight-ambient-cross-right;
+}
+
+.eagle-flight-ambient-helicopter {
+  width: 48px;
+  height: 20px;
+}
+
+.eagle-flight-ambient-helicopter::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  translate: -50% 0;
+  width: 52px;
+  height: 3px;
+  background: rgba(30, 41, 59, 0.7);
+  border-radius: 2px;
+  animation: eagle-flight-heli-blades 0.12s linear infinite;
+}
+
+.eagle-flight-ambient-helicopter::after {
+  content: "";
+  position: absolute;
+  inset: 4px 0 0;
+  background: #475569;
+  border-radius: 6px 12px 4px 4px;
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.2);
+}
+
+.eagle-flight-ambient-bird {
+  width: 14px;
+  height: 5px;
+  transform: scale(var(--ef-entity-scale, 1));
+}
+
+.eagle-flight-ambient-bird::before,
+.eagle-flight-ambient-bird::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid rgba(30, 41, 59, 0.55);
+  border-radius: 50% 50% 0 0;
+  animation: eagle-flight-bird-flap calc(0.5s / var(--ef-speed, 0.26)) ease-in-out infinite;
+}
+
+.eagle-flight-ambient-bird::before { left: 0; transform: rotate(-28deg); }
+.eagle-flight-ambient-bird::after { right: 0; transform: rotate(28deg); }
+
+@keyframes eagle-flight-star-twinkle {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+@keyframes eagle-flight-particle-drift {
+  0%, 100% { translate: 0 0; opacity: 0.3; }
+  50% { translate: 6px -8px; opacity: 0.7; }
+}
+
+@keyframes eagle-flight-ambient-cross-left {
+  to { translate: 130% 0; }
+}
+
+@keyframes eagle-flight-ambient-cross-right {
+  to { translate: -130% 0; }
+}
+
+@keyframes eagle-flight-heli-blades {
+  to { rotate: 360deg; }
+}
+
+@media (max-width: 899px) {
+  .eagle-flight-panel.plinko-panel .plinko-order-bet { order: 1; }
+  .eagle-flight-panel.plinko-panel .plinko-order-bet-btn { order: 2; }
+  .eagle-flight-panel-launched.plinko-panel .plinko-order-bet-btn { order: 0; }
+  .eagle-flight-panel .plinko-order-settings { order: 3; }
+  .eagle-flight-panel .plinko-order-auto { order: 4; }
+  .eagle-flight-panel .plinko-order-mode { order: 5; }
+  .eagle-flight-panel .plinko-order-result { order: 100; }
+
+  .eagle-flight-mobile-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    order: 0;
+  }
+
+  .eagle-flight-panel-actions-desktop {
+    display: none;
+  }
+
+  .eagle-flight-panel-bet-mobile {
+    display: block;
+  }
+
+  .eagle-flight-panel-bet-desktop {
+    display: none;
+  }
+
+  .eagle-flight-panel .mines-panel-primary:has(.eagle-flight-panel-bet-desktop) {
+    display: none;
+  }
+
+  .eagle-flight-arena-wrap {
+    container-type: inline-size;
+    flex: 0 0 auto;
+    padding: 10px 12px;
+  }
+
+  .eagle-flight-arena {
+    width: min(95cqw, 95%);
+    height: auto;
+    max-height: none;
+  }
+
+  .eagle-flight-eagle-logo {
+    width: min(26cqw, 100px);
+    height: min(26cqw, 100px);
+  }
+}
+
+@media (min-width: 900px) {
+  .eagle-flight-game .plinko-shell {
+    min-height: clamp(480px, 52vh, 640px);
+  }
+
+  .eagle-flight-game .eagle-flight-layout .eagle-flight-arena-wrap {
+    flex: 1;
+    min-height: 0;
+    padding: 18px 24px;
+    container-type: size;
+  }
+
+  .eagle-flight-game .eagle-flight-arena {
+    width: min(95cqw, 95cqh);
+    height: min(95cqw, 95cqh);
+  }
+}

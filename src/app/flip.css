@@ -1,0 +1,701 @@
+/* ── Flip (Progressive Coin Flip) ── */
+
+.flip-stage {
+  position: relative;
+}
+
+.flip-arena-stack {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.flip-game .flip-next-multiplier-badge {
+  padding: 10px 16px;
+  border-radius: 8px;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.flip-game .flip-next-multiplier-badge strong {
+  font-size: 16px;
+}
+
+.flip-game .flip-next-multiplier-badge .hilo-multiplier-label {
+  font-size: 11px;
+  letter-spacing: 0.05em;
+}
+
+.flip-coin-ambient {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(240px, 56vw);
+  height: min(240px, 56vw);
+  isolation: isolate;
+}
+
+.flip-coin-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.flip-coin-glow-outer {
+  width: 118%;
+  height: 118%;
+  background: radial-gradient(
+    circle,
+    rgba(181, 123, 255, 0.32) 0%,
+    rgba(109, 40, 217, 0.18) 38%,
+    rgba(236, 72, 153, 0.08) 58%,
+    transparent 74%
+  );
+  filter: blur(12px);
+  opacity: 0.95;
+  animation: flip-coin-glow-breathe 4.5s ease-in-out infinite;
+}
+
+.flip-coin-glow-inner {
+  width: 86%;
+  height: 86%;
+  background: radial-gradient(
+    circle at 50% 42%,
+    rgba(212, 184, 255, 0.24) 0%,
+    rgba(181, 123, 255, 0.12) 40%,
+    transparent 68%
+  );
+  filter: blur(5px);
+  opacity: 0.9;
+}
+
+.flip-coin-ambient-flipping .flip-coin-glow-outer {
+  animation: flip-coin-glow-flip 0.8s ease-in-out;
+}
+
+.flip-coin-ambient-flipping .flip-coin-glow-inner {
+  opacity: 1;
+  scale: 1.06;
+  transition: scale 0.8s ease, opacity 0.8s ease;
+}
+
+.flip-coin-ambient-win .flip-coin-glow-outer {
+  background: radial-gradient(
+    circle,
+    rgba(74, 222, 128, 0.32) 0%,
+    rgba(34, 197, 94, 0.16) 40%,
+    rgba(74, 222, 128, 0.06) 62%,
+    transparent 78%
+  );
+  opacity: 1;
+}
+
+.flip-coin-ambient-win .flip-coin-glow-inner {
+  background: radial-gradient(
+    circle,
+    rgba(134, 239, 172, 0.28) 0%,
+    rgba(74, 222, 128, 0.1) 50%,
+    transparent 72%
+  );
+}
+
+.flip-coin-ambient-loss .flip-coin-glow-outer {
+  background: radial-gradient(
+    circle,
+    rgba(248, 113, 113, 0.3) 0%,
+    rgba(239, 68, 68, 0.15) 40%,
+    rgba(248, 113, 113, 0.05) 62%,
+    transparent 78%
+  );
+  opacity: 1;
+}
+
+.flip-coin-ambient-loss .flip-coin-glow-inner {
+  background: radial-gradient(
+    circle,
+    rgba(252, 165, 165, 0.24) 0%,
+    rgba(239, 68, 68, 0.1) 50%,
+    transparent 72%
+  );
+}
+
+@keyframes flip-coin-glow-breathe {
+  0%,
+  100% {
+    opacity: 0.78;
+    scale: 0.98;
+  }
+  50% {
+    opacity: 1;
+    scale: 1.03;
+  }
+}
+
+@keyframes flip-coin-glow-flip {
+  0%,
+  100% {
+    opacity: 0.85;
+    scale: 1;
+  }
+  45% {
+    opacity: 1;
+    scale: 1.1;
+  }
+}
+
+.flip-coin-scene {
+  position: relative;
+  z-index: 1;
+  perspective: 1200px;
+  transform-style: preserve-3d;
+  width: min(180px, 42vw);
+  height: min(180px, 42vw);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flip-coin-scene::before {
+  content: "";
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 58%, rgba(109, 40, 217, 0.22) 0%, transparent 68%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.flip-coin {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.flip-coin-ambient-flipping {
+  animation: flip-coin-wobble 0.8s ease-in-out;
+}
+
+.flip-coin-flipping {
+  transition: transform 0.8s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@keyframes flip-coin-wobble {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  35% {
+    translate: 0 -10px;
+  }
+  70% {
+    translate: 0 -4px;
+  }
+}
+
+.flip-coin-face {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow:
+    inset 0 5px 16px rgba(255, 255, 255, 0.16),
+    inset 0 -8px 18px rgba(0, 0, 0, 0.58),
+    0 0 0 3px #07060b,
+    0 0 0 5px rgba(181, 123, 255, 0.28),
+    0 0 0 6px #100e18,
+    0 16px 34px rgba(0, 0, 0, 0.52),
+    0 0 36px rgba(109, 40, 217, 0.22);
+}
+
+.flip-coin-face-shine {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 22%, rgba(255, 255, 255, 0.28) 0%, transparent 48%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.flip-coin-face-ring {
+  position: absolute;
+  inset: 7px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.flip-coin-icon {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.flip-coin-face-eagle .flip-coin-icon {
+  width: 100%;
+  height: 78%;
+  transform: translate(calc(-2px), calc(-3% + 10px)) scale(1.12);
+}
+
+.flip-coin-face-eagle .flip-side-logo-coin {
+  width: 108%;
+  height: 108%;
+}
+
+.flip-coin-face-snake .flip-coin-icon {
+  width: 72%;
+  height: 72%;
+  transform: rotateY(180deg);
+}
+
+.flip-coin-face-eagle {
+  background:
+    radial-gradient(circle at 34% 26%, rgba(212, 184, 255, 0.22) 0%, transparent 42%),
+    radial-gradient(circle at 50% 115%, rgba(109, 40, 217, 0.35) 0%, transparent 52%),
+    linear-gradient(155deg, #6d3fbf 0%, #4c2a8a 28%, #2a2438 58%, #14101c 100%);
+  transform: rotateY(0deg) translateZ(7px);
+}
+
+.flip-coin-face-snake {
+  background:
+    radial-gradient(circle at 34% 26%, rgba(187, 247, 208, 0.2) 0%, transparent 42%),
+    radial-gradient(circle at 50% 115%, rgba(21, 128, 61, 0.4) 0%, transparent 52%),
+    linear-gradient(155deg, #22c55e 0%, #15803d 32%, #14532d 62%, #0c1f14 100%);
+  transform: rotateY(180deg) translateZ(7px);
+}
+
+.flip-side-logo-coin,
+.flip-side-snake-img-coin {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
+}
+
+.flip-side-snake-img-coin {
+  image-rendering: pixelated;
+}
+
+.flip-side-snake-img-button {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.flip-side-logo-button {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.flip-side-btn-eagle .flip-side-icon {
+  overflow: visible;
+}
+
+.flip-side-btn-eagle .flip-side-logo-button {
+  width: 38.64px;
+  height: 28px;
+  object-fit: contain;
+  object-position: center bottom;
+  transform: translateY(9px) scale(1.4884);
+  transform-origin: center bottom;
+}
+
+.flip-side-logo-chip {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
+.flip-side-snake-img-chip {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.flip-start-hint {
+  margin-top: 16px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.45);
+  text-align: center;
+}
+
+.flip-history-coin-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: var(--hilo-history-card-h);
+}
+
+.flip-history-strip .hilo-history-track {
+  gap: 6px;
+}
+
+.flip-history-coin {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  flex-shrink: 0;
+  overflow: hidden;
+  position: relative;
+  isolation: isolate;
+}
+
+.flip-history-coin::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.14);
+  pointer-events: none;
+  z-index: 2;
+  box-sizing: border-box;
+}
+
+.flip-history-coin-eagle {
+  background: linear-gradient(145deg, #5b21b6, #2a2438);
+}
+
+.flip-history-coin-snake {
+  background: linear-gradient(145deg, #22c55e, #14532d);
+}
+
+.flip-history-coin-win::after {
+  border-color: #4ade80;
+}
+
+.flip-history-coin-loss::after {
+  border-color: #ef4444;
+}
+
+.flip-history-coin-eagle .flip-side-logo-history {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  transform: scale(1.458);
+  transform-origin: center center;
+  position: relative;
+  z-index: 1;
+}
+
+.flip-history-coin-snake .flip-side-snake-img-history {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  position: relative;
+  z-index: 1;
+}
+
+.flip-side-logo-history {
+  object-fit: contain;
+}
+
+.flip-side-snake-img-history {
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.flip-side-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.flip-side-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.flip-side-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  padding: 8px 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #1a1c22;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s, transform 0.12s;
+}
+
+.flip-side-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  color: #fff;
+}
+
+.flip-side-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.flip-side-btn-eagle.flip-side-btn-active {
+  border-color: rgba(181, 123, 255, 0.45);
+  background: rgba(181, 123, 255, 0.12);
+  color: #e9d5ff;
+}
+
+.flip-side-btn-snake.flip-side-btn-active {
+  border-color: rgba(74, 222, 128, 0.45);
+  background: rgba(74, 222, 128, 0.12);
+  color: #bbf7d0;
+}
+
+.flip-side-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.flip-action-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.flip-action-row:has(.flip-cashout-btn + .plinko-bet-btn) {
+  grid-template-columns: 1fr 1fr;
+}
+
+.flip-panel-primary,
+.flip-panel-primary-wrap {
+  width: 100%;
+}
+
+.flip-panel-primary .plinko-bet-btn,
+.flip-panel-primary-wrap .plinko-bet-btn {
+  width: 100%;
+}
+
+.flip-cashout-btn:not(:disabled) {
+  background: linear-gradient(135deg, rgba(74, 222, 128, 0.25) 0%, rgba(22, 163, 74, 0.35) 100%);
+  border-color: rgba(74, 222, 128, 0.35);
+}
+
+.flip-side-picker-arena {
+  display: none;
+  width: 100%;
+  max-width: 320px;
+  margin-top: 16px;
+}
+
+@media (max-width: 899px) {
+  .flip-layout .flip-panel {
+    order: 1;
+  }
+
+  .flip-bet-block .plinko-stake-bet-heading {
+    display: none;
+  }
+
+  .flip-bet-block .plinko-stake-bet-label {
+    display: inline;
+  }
+
+  .flip-side-picker-panel {
+    display: none;
+  }
+
+  .flip-side-picker-arena {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .flip-panel-launched .flip-panel-primary-wrap {
+    order: 1;
+  }
+
+  .flip-panel-launched .flip-bet-block {
+    order: 2;
+  }
+
+  .flip-panel-launched .flip-panel-stats {
+    order: 100;
+  }
+
+  .flip-panel-launched .plinko-order-settings {
+    display: none;
+  }
+
+  .flip-start-hint {
+    display: none;
+  }
+
+  .flip-history-coin {
+    width: 36px;
+    height: 36px;
+  }
+
+  .flip-history-coin-eagle .flip-side-logo-history {
+    width: 22px;
+    height: 22px;
+    transform: scale(1.422);
+  }
+
+  .flip-history-coin-snake .flip-side-snake-img-history {
+    width: 22px;
+    height: 22px;
+  }
+
+  /* Pièce — rendu net sur mobile (évite le flou 3D + scale) */
+  .flip-coin-scene {
+    perspective: 900px;
+  }
+
+  .flip-coin-face-eagle {
+    transform: rotateY(0deg) translateZ(3px);
+  }
+
+  .flip-coin-face-snake {
+    transform: rotateY(180deg) translateZ(3px);
+  }
+
+  .flip-coin-face-eagle .flip-coin-icon {
+    width: 86%;
+    height: 86%;
+    transform: translate(-1px, 6px);
+  }
+
+  .flip-coin-face-eagle .flip-side-logo-coin {
+    width: 100%;
+    height: 100%;
+  }
+
+  .flip-coin-face-snake .flip-coin-icon {
+    width: 66%;
+    height: 66%;
+    transform: rotateY(180deg);
+  }
+
+  .flip-side-logo-coin,
+  .flip-side-snake-img-coin {
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transform: translate3d(0, 0, 0);
+  }
+
+  .flip-game .flip-stage {
+    gap: 23px;
+  }
+
+  .flip-game .flip-coin-ambient {
+    width: min(168px, 44vw);
+    height: min(168px, 44vw);
+    transform: translateY(7px);
+  }
+
+  .flip-game.flip-mode-auto .flip-coin-ambient {
+    transform: translateY(2px);
+  }
+
+  .flip-game .flip-coin-scene {
+    width: min(128px, 34vw);
+    height: min(128px, 34vw);
+  }
+
+  .flip-game .flip-side-picker-arena {
+    margin-top: 0;
+    transform: translateY(8px);
+  }
+
+  .flip-game .flip-next-multiplier-badge {
+    display: none;
+  }
+
+  .flip-layout .flip-arena-stack {
+    order: -1;
+    flex: 0 0 auto;
+    width: 100%;
+  }
+
+  .flip-game .flip-arena-stack .hilo-history-section {
+    flex-shrink: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .flip-game.flip-mode-auto .blackjack-table-wrap.hilo-table-wrap {
+    height: clamp(240px, calc(44dvh - 20px), 400px);
+    max-height: clamp(240px, calc(44dvh - 20px), 400px);
+  }
+
+  .flip-game.flip-mode-auto .flip-panel .plinko-order-settings {
+    order: 3;
+  }
+
+  .flip-game.flip-mode-auto .flip-panel .plinko-order-auto {
+    order: 4;
+  }
+
+}
+
+@media (min-width: 900px) {
+  .flip-panel {
+    min-height: 100%;
+  }
+
+  .flip-game .flip-next-multiplier-badge {
+    display: none;
+  }
+
+  .flip-side-picker-arena {
+    display: none;
+  }
+
+  .flip-layout .hilo-table-wrap {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .flip-layout .flip-arena-stack {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  .flip-layout .flip-arena-stack .hilo-table-wrap {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .flip-layout .flip-arena-stack .hilo-history-section {
+    flex-shrink: 0;
+  }
+}

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 400" fill="#ffffff">
+  <defs>
+    <g id="person">
+      <circle cx="0" cy="0" r="32" />
+      <path d="M-42 52h84a42 42 0 0 1-84 0Z" />
+    </g>
+  </defs>
+  <use href="#person" transform="translate(102 78)" />
+  <use href="#person" transform="translate(458 78)" />
+  <use href="#person" transform="translate(280 102)" />
+</svg>

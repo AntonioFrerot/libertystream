@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 533" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="400" y2="533" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1a1208"/>
+      <stop offset="0.5" stop-color="#2d1f0a"/>
+      <stop offset="1" stop-color="#1a0f05"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#fbbf24"/>
+      <stop offset="1" stop-color="#d97706"/>
+    </linearGradient>
+    <radialGradient id="chip" cx="50%" cy="50%" r="50%">
+      <stop stop-color="#fcd34d"/>
+      <stop offset="1" stop-color="#b45309"/>
+    </radialGradient>
+  </defs>
+  <rect width="400" height="533" fill="url(#bg)"/>
+  <circle cx="200" cy="240" r="90" fill="url(#chip)" stroke="url(#gold)" stroke-width="4"/>
+  <circle cx="200" cy="240" r="70" fill="none" stroke="#78350f" stroke-width="2" stroke-dasharray="8 6"/>
+  <text x="200" y="252" text-anchor="middle" fill="#451a03" font-size="42" font-weight="bold" font-family="Arial,sans-serif">$</text>
+  <rect x="130" y="120" width="70" height="98" rx="8" fill="#14532d" stroke="url(#gold)" stroke-width="2" transform="rotate(-15 165 169)"/>
+  <text x="155" y="175" fill="#fbbf24" font-size="28" font-weight="bold" font-family="Arial,sans-serif" transform="rotate(-15 165 169)">A</text>
+  <rect x="200" y="110" width="70" height="98" rx="8" fill="#14532d" stroke="url(#gold)" stroke-width="2" transform="rotate(8 235 159)"/>
+  <text x="228" y="168" fill="#ef4444" font-size="28" font-weight="bold" font-family="Arial,sans-serif" transform="rotate(8 235 159)">e</text>
+  <circle cx="80" cy="360" r="35" fill="url(#chip)" opacity="0.6"/>
+  <circle cx="320" cy="380" r="28" fill="url(#chip)" opacity="0.45"/>
+  <circle cx="280" cy="320" r="22" fill="url(#chip)" opacity="0.35"/>
+  <linearGradient id="fade" x1="200" y1="353" x2="200" y2="533" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#1a1208" stop-opacity="0"/>
+    <stop offset="1" stop-color="#1a1208" stop-opacity="0.9"/>
+  </linearGradient>
+  <rect width="400" height="180" y="353" fill="url(#fade)"/>
+</svg>

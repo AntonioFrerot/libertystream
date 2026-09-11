@@ -1,0 +1,1137 @@
+/* ── Chicken Road 2 — visuel route + layout site (panel gauche / arène droite) ── */
+
+/* Arène dans plinko-board-wrap */
+.chicken-road-table-wrap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 16px;
+}
+
+.cr2-arena {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Conteneur route — style voxel Crossy Road */
+.cr2-road-frame {
+  position: relative;
+  padding: 0;
+  background: #3d4450;
+  box-sizing: border-box;
+  border-radius: 10px;
+  overflow: hidden;
+  clip-path: inset(0 round 10px);
+  box-shadow:
+    0 4px 0 #2a2f38,
+    0 0 24px rgba(168, 85, 247, 0.08);
+}
+
+@media (min-width: 900px) {
+  .cr2-road-frame {
+    border-radius: 12px;
+    clip-path: inset(0 round 12px);
+  }
+}
+
+.cr2-road-scroll {
+  overflow: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.cr2-road-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.cr2-road-track {
+  position: relative;
+  height: var(--cr2-track-h, 118px);
+  display: flex;
+  align-items: stretch;
+  background: #4a5260;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.06) 1px, transparent 1px);
+  background-size: 16px 16px;
+  will-change: transform;
+}
+
+.cr2-road-track-sliding {
+  transition: transform var(--cr2-step-ms, 680ms) cubic-bezier(0.25, 0.85, 0.35, 1);
+}
+
+.cr2-road-track-victory-slide.cr2-road-track-sliding {
+  transition: transform var(--cr2-victory-roll-ms, 920ms) cubic-bezier(0.35, 0.72, 0.42, 1);
+}
+
+.cr2-finish-arrival {
+  display: flex;
+  flex-shrink: 0;
+  height: 100%;
+  z-index: 2;
+}
+
+.cr2-sidewalk {
+  position: relative;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: #c8cdd6;
+  border-right: 4px solid #9aa3b0;
+  box-shadow: inset -4px 0 0 rgba(168, 85, 247, 0.08);
+}
+
+.cr2-sidewalk-tiles {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.45) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.45) 2px, transparent 2px),
+    linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+  background-size: 28px 24px, 28px 24px, 14px 12px, 14px 12px;
+}
+
+.chicken-road-bush {
+  position: absolute;
+  left: 4px;
+  bottom: 8px;
+  width: var(--cr2-bush-width, 34px);
+  z-index: 2;
+}
+
+.chicken-road-lamppost {
+  position: absolute;
+  left: 8px;
+  top: 6px;
+  width: var(--cr2-lamppost-width, 16px);
+  z-index: 2;
+}
+
+.cr2-lane {
+  position: relative;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: #4a5260;
+}
+
+.cr2-lane-line {
+  position: absolute;
+  left: 0;
+  top: 10px;
+  bottom: 10px;
+  width: 3px;
+  border-left: none;
+  background-image: repeating-linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.92) 0,
+    rgba(255, 255, 255, 0.92) 10px,
+    transparent 10px,
+    transparent 20px
+  );
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+.cr2-lane-passed {
+  background: #545c6a;
+}
+
+.cr2-lane-current {
+  background: #505868;
+  box-shadow: inset 0 0 0 9999px rgba(168, 85, 247, 0.1);
+}
+
+.cr2-lane-crash {
+  background: #6b4f4f;
+  box-shadow: inset 0 0 0 9999px rgba(255, 23, 68, 0.12);
+}
+
+.cr2-lane-crash.cr2-lane-crash-impact {
+  animation: cr2-lane-crash-shake 0.42s ease-out forwards;
+}
+
+.cr2-lane-barrier {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: var(--cr2-barrier-size, 34px);
+  height: var(--cr2-barrier-size, 34px);
+  border-radius: 3px;
+  background:
+    repeating-linear-gradient(
+      135deg,
+      #ffca28 0,
+      #ffca28 8px,
+      #1a1a22 8px,
+      #1a1a22 16px
+    );
+  border: 2px solid #ffb300;
+  box-shadow:
+    2px 2px 0 rgba(0, 0, 0, 0.35),
+    0 0 8px rgba(255, 179, 0, 0.25);
+  z-index: 3;
+}
+
+/* ── Arrivée / zone victoire ── */
+
+.cr2-finish-checker {
+  flex-shrink: 0;
+  width: calc(18px * var(--cr2-scale, 1));
+  background: repeating-linear-gradient(
+    180deg,
+    #fff 0,
+    #fff calc(8px * var(--cr2-scale, 1)),
+    #1a1a22 calc(8px * var(--cr2-scale, 1)),
+    #1a1a22 calc(16px * var(--cr2-scale, 1))
+  );
+  box-shadow:
+    inset 2px 0 0 rgba(255, 202, 40, 0.45),
+    -2px 0 10px rgba(255, 202, 40, 0.2);
+  z-index: 2;
+}
+
+.cr2-finish-zone {
+  position: relative;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: linear-gradient(180deg, #ffe082 0%, #ffb300 55%, #ff8f00 100%);
+  border-left: 4px solid #ff6f00;
+  box-shadow:
+    inset 0 0 24px rgba(255, 255, 255, 0.22),
+    inset -6px 0 0 rgba(255, 143, 0, 0.35);
+}
+
+.cr2-finish-zone-tiles {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.35) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.35) 2px, transparent 2px),
+    linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+  background-size: 24px 22px, 24px 22px, 12px 11px, 12px 11px;
+  opacity: 0.65;
+}
+
+.cr2-finish-scroll-pad {
+  position: relative;
+  flex-shrink: 0;
+  height: 100%;
+  overflow: hidden;
+  background: linear-gradient(180deg, #ffe082 0%, #ffb300 55%, #ff8f00 100%);
+  box-shadow: inset -6px 0 0 rgba(255, 111, 0, 0.28);
+}
+
+/* ── Arrivée v2 (zone fixe) ── */
+
+.cr2-arrival {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.cr2-arrival-banner {
+  position: relative;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(4px * var(--cr2-scale, 1));
+  margin-top: calc(4px * var(--cr2-scale, 1));
+  padding: calc(4px * var(--cr2-scale, 1)) calc(12px * var(--cr2-scale, 1));
+  border-radius: calc(6px * var(--cr2-scale, 1));
+  background: linear-gradient(180deg, #312e81 0%, #1e1b4b 100%);
+  border: 2px solid rgba(168, 85, 247, 0.55);
+  box-shadow:
+    0 2px 0 rgba(0, 0, 0, 0.35),
+    0 0 12px rgba(168, 85, 247, 0.35);
+  white-space: nowrap;
+}
+
+.cr2-arrival-banner-text {
+  font-size: calc(11px * var(--cr2-scale, 1));
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: #fff;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+}
+
+.cr2-arrival-banner-star {
+  font-size: calc(9px * var(--cr2-scale, 1));
+  color: #ffca28;
+  line-height: 1;
+}
+
+.cr2-arrival-body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.cr2-arrival-dance {
+  position: relative;
+  z-index: 4;
+  width: var(--cr2-arrival-dance-w, 100px);
+  height: 100%;
+  margin-left: var(--cr2-arrival-dance-offset-x, 30px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.cr2-arrival-mult {
+  position: absolute;
+  top: 0;
+  right: var(--cr2-arrival-mult-offset-x, 300px);
+  bottom: 0;
+  z-index: 5;
+  width: var(--cr2-arrival-mult-pad-w, 120px);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 calc(8px * var(--cr2-scale, 1)) 0 calc(6px * var(--cr2-scale, 1));
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+.cr2-arrival-mult-value {
+  font-size: var(--cr2-arrival-mult-font, calc(44px * var(--cr2-scale, 1)));
+  font-weight: 900;
+  line-height: 0.88;
+  letter-spacing: -0.04em;
+  color: #1e1b4b;
+  text-align: right;
+  white-space: nowrap;
+  text-shadow:
+    0 2px 0 rgba(255, 255, 255, 0.85),
+    0 0 20px rgba(255, 202, 40, 0.55),
+    0 4px 0 rgba(255, 111, 0, 0.22);
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.cr2-arrival-mult-value-dancing {
+  transition: transform 0.468s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+}
+
+.cr2-arrival-confetti-rain {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.cr2-arrival-confetti-rain-piece {
+  position: absolute;
+  top: -12px;
+  border-radius: 1px;
+  opacity: 0.92;
+  animation: cr2-arrival-confetti-fall linear infinite;
+  will-change: transform;
+}
+
+@keyframes cr2-arrival-confetti-fall {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: 0;
+  }
+  8% { opacity: 0.95; }
+  100% {
+    transform: translate3d(var(--cr2-confetti-drift, 0px), calc(var(--cr2-track-h, 125px) + 16px), 0)
+      rotate(720deg);
+    opacity: 0.7;
+  }
+}
+
+.cr2-arrival-near {
+  animation: cr2-finish-near-pulse 1.8s ease-in-out infinite;
+}
+
+.cr2-finish-arrival-reached .cr2-finish-zone {
+  box-shadow:
+    inset 0 0 28px rgba(255, 255, 255, 0.35),
+    inset -6px 0 0 rgba(255, 143, 0, 0.35),
+    0 0 20px rgba(255, 202, 40, 0.45);
+}
+
+@keyframes cr2-finish-near-pulse {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.08); }
+}
+
+.cr2-manhole {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: var(--cr2-manhole-size, 52px);
+  height: var(--cr2-manhole-size, 52px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.cr2-manhole-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.35));
+}
+
+.cr2-manhole-passed .cr2-manhole-svg {
+  opacity: 0.48;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25)) saturate(0.6);
+}
+
+.cr2-manhole-current .cr2-manhole-svg {
+  filter:
+    drop-shadow(0 2px 2px rgba(0, 0, 0, 0.35))
+    drop-shadow(0 0 10px rgba(168, 85, 247, 0.4));
+}
+
+.cr2-manhole-label {
+  position: relative;
+  z-index: 1;
+  margin-top: 1px;
+  font-size: var(--cr2-manhole-label-size, 10px);
+  font-weight: 800;
+  color: #ececef;
+  -webkit-text-stroke: 0.6px #2a2a30;
+  paint-order: stroke fill;
+  text-shadow:
+    1px 0 0 #2a2a30,
+    -1px 0 0 #2a2a30,
+    0 1px 0 #2a2a30,
+    0 -1px 0 #2a2a30,
+    0 2px 0 rgba(0, 0, 0, 0.35);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.cr2-manhole-current .cr2-manhole-label {
+  font-size: var(--cr2-manhole-label-current-size, 11px);
+  color: #fff;
+}
+
+.cr2-chicken {
+  position: absolute;
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translateX(-50%) translateY(-100%);
+  transition:
+    left var(--cr2-step-ms, 680ms) cubic-bezier(0.25, 0.85, 0.35, 1),
+    top var(--cr2-step-ms, 680ms) cubic-bezier(0.25, 0.85, 0.35, 1);
+  pointer-events: none;
+}
+
+.cr2-chicken.cr2-chicken-crash-wait {
+  z-index: 7;
+}
+
+.cr2-chicken.cr2-chicken-dead {
+  z-index: 5;
+  transform: translateX(-50%) translateY(-50%);
+  transition:
+    left var(--cr2-step-ms, 680ms) cubic-bezier(0.25, 0.85, 0.35, 1),
+    top 0.22s ease-out,
+    width 0.22s ease-out,
+    height 0.22s ease-out;
+}
+
+.cr2-chicken-dead .cr2-chicken-sprite {
+  width: 100%;
+  height: 100%;
+  animation: cr2-squash-reveal 0.32s cubic-bezier(0.55, 0, 1, 0.45) forwards;
+  transform-origin: center center;
+}
+
+.cr2-chicken-dead .cr2-chicken-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
+}
+
+.cr2-chicken-sprite {
+  position: relative;
+  width: 100%;
+  transform-origin: center bottom;
+}
+
+.cr2-chicken-svg,
+.cr2-chicken-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+  transform-origin: center bottom;
+  filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.28));
+  user-select: none;
+  object-fit: contain;
+  object-position: center bottom;
+}
+
+.cr2-chicken-badge {
+  position: absolute;
+  top: var(--cr2-chicken-badge-top, -22px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 3px 10px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #312e81 0%, #1e1b4b 100%);
+  border: 2px solid rgba(168, 85, 247, 0.5);
+  box-shadow:
+    0 2px 0 rgba(0, 0, 0, 0.35),
+    0 0 10px rgba(168, 85, 247, 0.3);
+  font-size: var(--cr2-chicken-badge-font, 10px);
+  font-weight: 900;
+  color: #fff;
+  white-space: nowrap;
+  z-index: 2;
+  letter-spacing: 0.02em;
+}
+
+.cr2-chicken-badge::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  transform: translateX(-50%);
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #1e1b4b;
+}
+
+/* ── Idle : respiration au sol (squash, pas de décollage) ── */
+.cr2-chicken-idle .cr2-chicken-sprite {
+  animation: cr2-idle-breathe 2.6s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+
+.cr2-chicken-idle .cr-chicken-comb {
+  animation: cr2-idle-comb 2.6s ease-in-out infinite;
+  transform-origin: 44px 22px;
+}
+
+.cr2-chicken-idle .cr-chicken-eye {
+  animation: cr2-idle-blink 4.8s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes cr2-idle-blink {
+  0%, 46%, 48%, 100% { transform: scaleY(1); }
+  47% { transform: scaleY(0.1); }
+}
+
+@keyframes cr2-idle-breathe {
+  0%, 100% { transform: scale(1, 1); }
+  50% { transform: scale(1.04, 0.96); }
+}
+
+@keyframes cr2-idle-comb {
+  0%, 100% { transform: rotate(0deg); }
+  40% { transform: rotate(-1.5deg); }
+  70% { transform: rotate(1.5deg); }
+}
+
+@keyframes cr2-idle-tail {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(2deg); }
+}
+
+.cr2-chicken-return .cr2-chicken-sprite {
+  animation: cr2-return-walk var(--cr2-step-ms, 680ms) ease-in-out forwards;
+}
+
+.cr2-chicken-victory-roll {
+  z-index: 10;
+  transition:
+    left var(--cr2-victory-roll-ms, 920ms) cubic-bezier(0.35, 0.72, 0.42, 1),
+    top var(--cr2-victory-roll-ms, 920ms) cubic-bezier(0.35, 0.72, 0.42, 1);
+}
+
+.cr2-chicken-victory-roll .cr2-chicken-sprite {
+  animation: cr2-victory-roll-spin var(--cr2-victory-roll-ms, 920ms) cubic-bezier(0.35, 0.72, 0.42, 1) forwards;
+  transform-origin: center center;
+}
+
+.cr2-chicken-victory-dance {
+  z-index: 10;
+  transition: none;
+}
+
+.cr2-chicken-victory-dance .cr2-chicken-sprite {
+  animation: cr2-victory-hiphop var(--cr2-victory-beat-ms, 612ms) ease-in-out infinite;
+  transform-origin: center bottom;
+}
+
+.cr2-chicken-victory-dance .cr2-chicken-svg {
+  transform: scaleX(-1);
+}
+
+.cr2-chicken-victory-dance .cr-chicken-comb {
+  animation: cr2-victory-comb-shake var(--cr2-victory-beat-ms, 612ms) ease-in-out infinite;
+  transform-origin: 44px 22px;
+}
+
+.cr2-chicken-victory-dance .cr-chicken-eye {
+  animation: cr2-victory-eye-bounce var(--cr2-victory-beat-ms, 612ms) ease-in-out infinite;
+}
+
+.cr2-victory-trophy {
+  position: absolute;
+  top: calc(100% - 2px * var(--cr2-scale, 1) + 30px);
+  left: 50%;
+  width: calc(34px * var(--cr2-scale, 1));
+  height: calc(40px * var(--cr2-scale, 1));
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
+  transform: translateX(-50%);
+  transform-origin: center bottom;
+  z-index: -1;
+}
+
+.cr2-trophy-preview {
+  position: absolute;
+  z-index: 9;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.cr2-victory-trophy-preview {
+  position: static;
+  top: auto;
+  left: auto;
+  transform: none;
+  z-index: auto;
+}
+
+.cr2-chicken-victory-dance .cr2-victory-trophy {
+  animation: cr2-victory-trophy-bounce var(--cr2-victory-beat-ms, 612ms) ease-in-out infinite;
+}
+
+@keyframes cr2-victory-trophy-bounce {
+  0%, 100% {
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+  35% {
+    transform: translateX(-50%) translateY(calc(-3px * var(--cr2-scale, 1))) scale(1.06);
+  }
+  65% {
+    transform: translateX(-50%) translateY(calc(1px * var(--cr2-scale, 1))) scale(0.98);
+  }
+}
+
+@keyframes cr2-victory-roll-spin {
+  0% { transform: rotate(0deg) scale(1, 1); }
+  25% { transform: rotate(120deg) scale(0.82, 1.12); }
+  55% { transform: rotate(280deg) scale(0.88, 1.08); }
+  80% { transform: rotate(420deg) scale(0.94, 1.04); }
+  100% { transform: rotate(540deg) scale(1, 1); }
+}
+
+@keyframes cr2-victory-hiphop {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg) scale(1, 1);
+  }
+  12% {
+    transform: translateY(calc(-10px * var(--cr2-scale, 1))) rotate(-10deg) scale(1.06, 0.94);
+  }
+  24% {
+    transform: translateY(calc(-2px * var(--cr2-scale, 1))) rotate(8deg) scale(0.96, 1.04);
+  }
+  36% {
+    transform: translateY(calc(-12px * var(--cr2-scale, 1))) rotate(-14deg) scale(1.08, 0.92);
+  }
+  48% {
+    transform: translateY(calc(-4px * var(--cr2-scale, 1))) rotate(12deg) scale(0.98, 1.02);
+  }
+  60% {
+    transform: translateY(calc(-8px * var(--cr2-scale, 1))) rotate(-8deg) scale(1.04, 0.96);
+  }
+  72% {
+    transform: translateY(0) rotate(6deg) scale(1, 1);
+  }
+  84% {
+    transform: translateY(calc(-6px * var(--cr2-scale, 1))) rotate(-6deg) scale(1.02, 0.98);
+  }
+}
+
+@keyframes cr2-victory-comb-shake {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-8deg); }
+  50% { transform: rotate(10deg); }
+  75% { transform: rotate(-6deg); }
+}
+
+@keyframes cr2-victory-eye-bounce {
+  0%, 100% { transform: translateY(0); }
+  30% { transform: translateY(calc(-2px * var(--cr2-scale, 1))); }
+  60% { transform: translateY(calc(1px * var(--cr2-scale, 1))); }
+}
+
+@keyframes cr2-return-walk {
+  0%, 100% { transform: translateY(0) scale(1, 1); }
+  25% { transform: translateY(calc(-2px * var(--cr2-scale, 1))) scale(1.02, 0.98); }
+  50% { transform: translateY(0) scale(1, 1); }
+  75% { transform: translateY(calc(-2px * var(--cr2-scale, 1))) scale(1.02, 0.98); }
+}
+
+/* ── Saut : arc vertical, atterrissage au centre de la bouche ── */
+.cr2-chicken-jump .cr2-chicken-sprite {
+  animation: cr2-jump-arc var(--cr2-step-ms, 680ms) cubic-bezier(0.33, 1.15, 0.55, 1) forwards;
+}
+
+.cr2-chicken-jump .cr-chicken-legs {
+  animation: none;
+}
+
+@keyframes cr2-jump-arc {
+  0% { transform: translateY(0) scale(1.06, 0.9); }
+  12% { transform: translateY(calc(4px * var(--cr2-scale, 1))) scale(0.95, 1.05); }
+  40% { transform: translateY(calc(-22px * var(--cr2-scale, 1))) scale(0.98, 1.02); }
+  58% { transform: translateY(calc(-18px * var(--cr2-scale, 1))); }
+  76% { transform: translateY(calc(3px * var(--cr2-scale, 1))) scale(1.05, 0.92); }
+  90% { transform: translateY(calc(-1px * var(--cr2-scale, 1))); }
+  100% { transform: translateY(0) scale(1, 1); }
+}
+
+@keyframes cr2-jump-legs {
+  0%, 100% { transform: translateY(0); }
+  25%, 60% { transform: translateY(calc(-5px * var(--cr2-scale, 1))) scaleY(0.85); }
+}
+
+.cr2-chicken-crash-wait .cr2-chicken-sprite {
+  animation: cr2-crash-nervous 0.28s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+
+@keyframes cr2-crash-nervous {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  25% { transform: translateX(calc(-1px * var(--cr2-scale, 1))) rotate(-1.5deg); }
+  75% { transform: translateX(calc(1px * var(--cr2-scale, 1))) rotate(1.5deg); }
+}
+
+@keyframes cr2-squash-reveal {
+  0% {
+    transform: scale(0.55, 0.22);
+    opacity: 0.85;
+  }
+  45% {
+    transform: scale(1.12, 0.88);
+    opacity: 1;
+  }
+  72% {
+    transform: scale(0.96, 1.04);
+  }
+  100% {
+    transform: scale(1, 1);
+    opacity: 1;
+  }
+}
+
+@keyframes cr2-lane-crash-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(calc(-3px * var(--cr2-scale, 1))); }
+  40% { transform: translateX(calc(3px * var(--cr2-scale, 1))); }
+  60% { transform: translateX(calc(-2px * var(--cr2-scale, 1))); }
+  80% { transform: translateX(calc(1px * var(--cr2-scale, 1))); }
+}
+
+.cr2-car-lane {
+  position: absolute;
+  left: 50%;
+  top: calc(-54px * var(--cr2-scale, 1));
+  transform: translateX(-50%);
+  z-index: 7;
+  width: var(--cr2-car-width, 30px);
+  animation: cr2-car-drive 0.88s linear forwards;
+}
+
+.cr2-car-lane svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter:
+    drop-shadow(0 3px 2px rgba(0, 0, 0, 0.4))
+    drop-shadow(0 0 4px rgba(168, 85, 247, 0.12));
+}
+
+.cr2-car-ambient svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.45));
+}
+
+.chicken-road-bush svg,
+.chicken-road-lamppost svg {
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
+}
+
+.cr2-car-crash {
+  z-index: 9;
+  animation: cr2-car-crash-run var(--cr2-crash-duration, 900ms) linear forwards;
+}
+
+.cr2-car-ambient {
+  position: absolute;
+  left: 50%;
+  top: calc(-54px * var(--cr2-scale, 1));
+  transform: translateX(-50%);
+  width: var(--cr2-car-ambient-width, 28px);
+  z-index: 6;
+  pointer-events: none;
+  animation: cr2-car-traffic var(--cr2-traffic-duration, 3s) linear infinite;
+  animation-delay: var(--cr2-traffic-delay, 0s);
+}
+
+@keyframes cr2-car-traffic {
+  from { top: calc(-54px * var(--cr2-scale, 1)); }
+  to { top: calc(100% + 8px * var(--cr2-scale, 1)); }
+}
+
+@keyframes cr2-car-drive {
+  from { top: calc(-54px * var(--cr2-scale, 1)); }
+  to { top: calc(100% + 8px * var(--cr2-scale, 1)); }
+}
+
+@keyframes cr2-car-crash {
+  0% {
+    top: calc(-54px * var(--cr2-scale, 1));
+  }
+  100% {
+    top: calc(100% + 8px * var(--cr2-scale, 1));
+  }
+}
+
+/* ── Panneau (style Plinko / HiLo) ── */
+
+.chicken-road-difficulty {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chicken-road-difficulty-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.chicken-road-difficulty-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.chicken-road-difficulty-btn {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.chicken-road-difficulty-btn:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.chicken-road-difficulty-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.chicken-road-difficulty-active {
+  border-color: rgba(250, 204, 21, 0.45);
+  background: rgba(250, 204, 21, 0.12);
+  color: #fde047;
+}
+
+.chicken-road-difficulty-easy.chicken-road-difficulty-active {
+  border-color: rgba(74, 222, 128, 0.45);
+  background: rgba(74, 222, 128, 0.12);
+  color: #86efac;
+}
+
+.chicken-road-difficulty-hardcore.chicken-road-difficulty-active {
+  border-color: rgba(239, 68, 68, 0.45);
+  background: rgba(239, 68, 68, 0.12);
+  color: #fca5a5;
+}
+
+.chicken-road-action-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.chicken-road-cashout-btn:not(:disabled) {
+  background: linear-gradient(135deg, rgba(74, 222, 128, 0.25) 0%, rgba(22, 163, 74, 0.35) 100%);
+  border-color: rgba(74, 222, 128, 0.35);
+}
+
+.chicken-road-panel-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.chicken-road-stat-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 12px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.chicken-road-stat-row > :first-child {
+  min-width: 0;
+}
+
+.chicken-road-stat-row > strong,
+.chicken-road-stat-row .liberty-amount-value {
+  justify-self: end;
+}
+
+.chicken-road-stat-row strong {
+  color: #fff;
+  font-weight: 700;
+}
+
+.chicken-road-stat-profit .liberty-amount-value {
+  color: #4ade80;
+}
+
+.chicken-road-stat-loss .liberty-amount-value {
+  color: #f87171;
+}
+
+/* ── Layout responsive (comme HiLo / Plinko) ── */
+
+@media (max-width: 899px) {
+  .chicken-road-layout .chicken-road-table-wrap {
+    order: -1;
+    flex: 0 0 auto;
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .chicken-road-layout .chicken-road-panel {
+    order: 1;
+  }
+
+  .cr2-arrival-banner {
+    padding: 3px 8px;
+    gap: 3px;
+  }
+
+  .cr2-arrival-banner-text {
+    font-size: 9px;
+    letter-spacing: 0.08em;
+  }
+
+  .cr2-arrival-banner-star {
+    font-size: 8px;
+  }
+
+  .cr2-arrival-mult {
+    padding: 0 4px 0 2px;
+  }
+
+  .cr2-victory-trophy,
+  .cr2-victory-trophy-preview {
+    width: calc(28px * var(--cr2-scale, 1));
+    height: calc(32px * var(--cr2-scale, 1));
+  }
+
+  .cr2-arrival-dancing .cr2-arrival-banner {
+    display: none;
+  }
+
+  .cr2-chicken-victory-dance .cr2-victory-trophy {
+    display: none;
+  }
+
+  .chicken-road-mobile-bet,
+  .chicken-road-mobile-actions {
+    display: block;
+  }
+
+  .chicken-road-game .chicken-road-bet-block .plinko-stake-bet-label .blackjack-bet-label-text {
+    translate: 0 -2px;
+  }
+
+  .chicken-road-panel-primary-desktop {
+    display: none;
+  }
+}
+
+@media (min-width: 900px) {
+  .chicken-road-mobile-bet,
+  .chicken-road-mobile-actions {
+    display: none;
+  }
+
+  .chicken-road-game .plinko-layout.chicken-road-layout {
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .chicken-road-game .plinko-shell {
+    min-height: clamp(500px, 58vh, 680px);
+  }
+
+  .chicken-road-game .plinko-layout.chicken-road-layout .chicken-road-table-wrap {
+    order: 0;
+    flex: 1 1 auto;
+    min-height: 0;
+    min-width: 0;
+    width: 100%;
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .chicken-road-game .plinko-layout.chicken-road-layout .cr2-arena {
+    width: 100%;
+    max-width: 100%;
+    flex: 0 1 auto;
+    min-height: 0;
+    justify-content: center;
+  }
+
+  .chicken-road-game .plinko-layout.chicken-road-layout .cr2-road-frame {
+    width: 100%;
+  }
+
+  .chicken-road-game .plinko-layout.chicken-road-layout .chicken-road-panel.plinko-panel {
+    order: 1;
+    width: 100% !important;
+    max-width: none !important;
+    flex-shrink: 0;
+    border-right: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    grid-template-areas:
+      "difficulty difficulty"
+      "bet actions";
+    justify-content: stretch;
+    justify-items: stretch;
+    align-items: stretch;
+    gap: 14px 12px;
+    padding: 16px 20px 18px;
+    box-sizing: border-box;
+  }
+
+  .chicken-road-game .chicken-road-panel .plinko-panel-full {
+    width: 100%;
+    flex: 0 0 auto;
+  }
+
+  .chicken-road-game .chicken-road-panel .chicken-road-difficulty {
+    grid-area: difficulty;
+    width: 100%;
+    justify-self: stretch;
+  }
+
+  .chicken-road-game .chicken-road-panel .chicken-road-difficulty-grid {
+    display: flex;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .chicken-road-game .chicken-road-panel .chicken-road-difficulty-btn {
+    flex: 1 1 0;
+    min-width: 0;
+    width: auto;
+    padding: 10px 8px;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .chicken-road-game .chicken-road-panel .chicken-road-bet-block {
+    grid-area: bet;
+    width: 100%;
+    min-width: 0;
+    justify-self: stretch;
+  }
+
+  .chicken-road-game .chicken-road-panel .chicken-road-bet-block > * {
+    width: 100%;
+  }
+
+  .chicken-road-game .chicken-road-panel .chicken-road-panel-primary-desktop {
+    grid-area: actions;
+    width: 100%;
+    justify-self: stretch;
+    align-self: end;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+  }
+
+  .chicken-road-game .chicken-road-panel .chicken-road-panel-primary-desktop .plinko-bet-btn {
+    width: 100%;
+    height: 48px;
+    min-height: 48px;
+    padding: 0 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+
+  .chicken-road-game .chicken-road-panel .chicken-road-action-row {
+    width: 100%;
+    height: 48px;
+    align-items: stretch;
+  }
+
+  .chicken-road-game .chicken-road-panel .chicken-road-action-row .plinko-bet-btn {
+    flex: 1;
+    height: 48px;
+    min-height: 48px;
+    padding: 0 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+
+  .chicken-road-panel-stats {
+    display: none;
+  }
+}

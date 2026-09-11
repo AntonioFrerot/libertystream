@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 533" fill="none">
+  <defs>
+    <linearGradient id="sky" x1="200" y1="0" x2="200" y2="400" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0c1929"/>
+      <stop offset="0.4" stop-color="#1e3a5f"/>
+      <stop offset="0.7" stop-color="#c2410c" stop-opacity="0.6"/>
+      <stop offset="1" stop-color="#ea580c" stop-opacity="0.3"/>
+    </linearGradient>
+    <linearGradient id="fade" x1="200" y1="353" x2="200" y2="533" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0c1929" stop-opacity="0"/>
+      <stop offset="1" stop-color="#0c1929" stop-opacity="0.92"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="533" fill="url(#sky)"/>
+  <circle cx="320" cy="80" r="40" fill="#fdba74" opacity="0.25"/>
+  <rect x="0" y="320" width="60" height="200" fill="#0f172a" opacity="0.8"/>
+  <rect x="70" y="280" width="45" height="240" fill="#1e293b" opacity="0.85"/>
+  <rect x="125" y="250" width="55" height="270" fill="#0f172a" opacity="0.9"/>
+  <rect x="190" y="220" width="50" height="300" fill="#1e293b"/>
+  <rect x="250" y="260" width="40" height="260" fill="#0f172a" opacity="0.85"/>
+  <rect x="300" y="290" width="50" height="230" fill="#1e293b" opacity="0.8"/>
+  <rect x="360" y="310" width="40" height="210" fill="#0f172a" opacity="0.75"/>
+  <rect x="0" y="400" width="400" height="60" fill="#065f46" opacity="0.5"/>
+  <circle cx="200" cy="430" r="8" fill="#34d399" opacity="0.6"/>
+  <circle cx="160" cy="435" r="5" fill="#34d399" opacity="0.4"/>
+  <circle cx="240" cy="432" r="6" fill="#34d399" opacity="0.45"/>
+  <path d="M200 430 L220 410 L240 420 L260 400 L280 415 L300 395" stroke="#fbbf24" stroke-width="2" fill="none" opacity="0.5"/>
+  <rect width="400" height="180" y="353" fill="url(#fade)"/>
+</svg>

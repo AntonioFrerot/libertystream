@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 533" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="400" y2="533" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#071018"/>
+      <stop offset="0.5" stop-color="#0f1a3d"/>
+      <stop offset="1" stop-color="#1a0f3d"/>
+    </linearGradient>
+    <linearGradient id="neon" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#22d3ee"/>
+      <stop offset="1" stop-color="#b57bff"/>
+    </linearGradient>
+    <linearGradient id="fade" x1="200" y1="353" x2="200" y2="533" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#071018" stop-opacity="0"/>
+      <stop offset="1" stop-color="#071018" stop-opacity="0.85"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="10" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="400" height="533" fill="url(#bg)"/>
+  <g opacity="0.15" stroke="#22d3ee" stroke-width="0.5">
+    <line x1="0" y1="100" x2="400" y2="100"/>
+    <line x1="0" y1="200" x2="400" y2="200"/>
+    <line x1="0" y1="300" x2="400" y2="300"/>
+    <line x1="0" y1="400" x2="400" y2="400"/>
+    <line x1="100" y1="0" x2="100" y2="533"/>
+    <line x1="200" y1="0" x2="200" y2="533"/>
+    <line x1="300" y1="0" x2="300" y2="533"/>
+  </g>
+  <g transform="translate(200 250)" filter="url(#glow)">
+    <rect x="-95" y="-55" width="190" height="110" rx="36" fill="#111827" stroke="url(#neon)" stroke-width="3"/>
+    <circle cx="-45" cy="-5" r="16" fill="#22d3ee" opacity="0.85"/>
+    <circle cx="45" cy="-5" r="16" fill="#22d3ee" opacity="0.85"/>
+    <rect x="-12" y="18" width="24" height="24" rx="5" fill="#b57bff" opacity="0.75"/>
+    <path d="M55 -5 L72 -5 L72 12 L55 12 Z" fill="none" stroke="#b57bff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>
+    <circle cx="63.5" cy="-12" r="4" fill="#b57bff" opacity="0.7"/>
+    <circle cx="63.5" cy="2" r="4" fill="#b57bff" opacity="0.7"/>
+    <circle cx="56" cy="-5" r="4" fill="#b57bff" opacity="0.7"/>
+    <circle cx="71" cy="-5" r="4" fill="#b57bff" opacity="0.7"/>
+  </g>
+  <rect width="400" height="180" y="353" fill="url(#fade)"/>
+</svg>
