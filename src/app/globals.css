@@ -3766,24 +3766,24 @@
     );
     transform: translateX(-170%) rotate(22deg);
     opacity: 0;
-    animation: blackjack-card-shine 9s linear infinite;
+    animation: blackjack-card-shine 4s linear infinite;
     pointer-events: none;
     z-index: 2;
   }
 
   @keyframes blackjack-card-shine {
-    0%, 82% {
+    0%, 75% {
       transform: translateX(-170%) rotate(22deg);
       opacity: 0;
     }
-    83% {
+    76% {
       opacity: 1;
     }
-    91% {
+    94% {
       transform: translateX(290%) rotate(22deg);
       opacity: 1;
     }
-    92%, 100% {
+    95%, 100% {
       transform: translateX(290%) rotate(22deg);
       opacity: 0;
     }
