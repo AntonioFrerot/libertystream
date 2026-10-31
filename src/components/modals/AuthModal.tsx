@@ -17,31 +17,41 @@ interface AuthModalProps {
 export function AuthModal({ open, mode, onClose, onSwitchMode }: AuthModalProps) {
   const { t } = useLanguage();
   const { showToast } = useToast();
-  const { login, register } = useAuth();
+  const { login, register, recoverAdminAccount } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [forgotMode, setForgotMode] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
     const errKey =
-      mode === "login"
-        ? login(email, password)
-        : await register(username, email, password);
+      forgotMode
+        ? recoverAdminAccount(email, password)
+        : mode === "login"
+          ? login(email, password)
+          : await register(username, email, password);
 
     if (errKey) {
       setError(t(errKey as TranslationKey));
       return;
     }
 
-    showToast(mode === "login" ? t("authLoginSuccess") : t("authSignupSuccess"));
+    showToast(
+      forgotMode
+        ? t("authForgotSuccess")
+        : mode === "login"
+          ? t("authLoginSuccess")
+          : t("authSignupSuccess"),
+    );
     onClose();
     setEmail("");
     setPassword("");
     setUsername("");
+    setForgotMode(false);
   };
 
   const fillDemo = () => {
@@ -51,9 +61,16 @@ export function AuthModal({ open, mode, onClose, onSwitchMode }: AuthModalProps)
   };
 
   return (
-    <Modal open={open} onClose={onClose} title={mode === "login" ? t("authLogin") : t("authSignup")}>
+    <Modal
+      open={open}
+      onClose={() => {
+        setForgotMode(false);
+        onClose();
+      }}
+      title={forgotMode ? t("authForgotPassword") : mode === "login" ? t("authLogin") : t("authSignup")}
+    >
       <form onSubmit={handleSubmit} className="space-y-4">
-        {mode === "login" && (
+        {mode === "login" && !forgotMode && (
           <div className="px-3 py-2.5 rounded-lg bg-neon-cyan/5 border border-neon-cyan/20">
             <p className="text-xs text-neon-cyan font-medium mb-1">{t("demoAccounts")}</p>
             <p className="text-xs text-white/50">{t("demoHint")}</p>
@@ -62,6 +79,9 @@ export function AuthModal({ open, mode, onClose, onSwitchMode }: AuthModalProps)
             </button>
           </div>
         )}
+        {forgotMode && (
+          <p className="text-xs text-white/50">{t("authForgotHint")}</p>
+        )}
 
         {error && (
           <p className="text-sm text-red-400 px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/20">
@@ -69,7 +89,7 @@ export function AuthModal({ open, mode, onClose, onSwitchMode }: AuthModalProps)
           </p>
         )}
 
-        {mode === "signup" && (
+        {mode === "signup" && !forgotMode && (
           <div>
             <label className="text-xs text-white/40 mb-1.5 block">{t("username")}</label>
             <input
@@ -107,10 +127,30 @@ export function AuthModal({ open, mode, onClose, onSwitchMode }: AuthModalProps)
           />
         </div>
         <button type="submit" className="w-full btn-primary !py-3">
-          {mode === "login" ? t("authLoginBtn") : t("authSignupBtn")}
+          {forgotMode ? t("authForgotBtn") : mode === "login" ? t("authLoginBtn") : t("authSignupBtn")}
         </button>
+        {mode === "login" && !forgotMode && (
+          <p className="text-center text-sm">
+            <button
+              type="button"
+              onClick={() => {
+                setForgotMode(true);
+                setError(null);
+                setEmail("antonnbot2005@gmail.com");
+                setPassword("");
+              }}
+              className="text-neon-cyan hover:underline"
+            >
+              {t("authForgotPassword")}
+            </button>
+          </p>
+        )}
         <p className="text-center text-sm text-white/40">
-          {mode === "login" ? (
+          {forgotMode ? (
+            <button type="button" onClick={() => { setForgotMode(false); setError(null); }} className="text-neon-cyan hover:underline">
+              {t("login")}
+            </button>
+          ) : mode === "login" ? (
             <>
               {t("noAccount")}{" "}
               <button type="button" onClick={() => { onSwitchMode("signup"); setError(null); }} className="text-neon-cyan hover:underline">

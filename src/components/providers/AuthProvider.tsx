@@ -26,6 +26,7 @@ import type { FriendEntry } from "@/lib/friends/types";
 import { sendDirectMessage } from "@/lib/messages/directMessages";
 import { pushUserNotification } from "@/lib/messages/userNotifications";
 import { findStoredUserById } from "@/lib/auth/userStore";
+import { isAdminEmail } from "@/lib/auth/admin";
 
 interface AuthContextValue {
   user: PublicUser | null;
@@ -45,6 +46,7 @@ interface AuthContextValue {
   updateAvatar: (avatar: string) => void;
   updateProfile: (data: { displayName?: string; bio?: string; banner?: string }) => void;
   changePassword: (currentPassword: string, newPassword: string) => TranslationKey | null;
+  recoverAdminAccount: (email: string, newPassword: string) => string | null;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -332,6 +334,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [user]
   );
 
+  const recoverAdminAccount = useCallback((email: string, newPassword: string): string | null => {
+    if (!isAdminEmail(email)) return "authErrorForgotNotAdmin";
+    if (newPassword.length < 6) return "authErrorPasswordShort";
+
+    const users = loadUsers();
+    const existing = users.find((u) => u.email.toLowerCase() === email.trim().toLowerCase());
+
+    if (existing) {
+      const updated = updateUser(existing.id, (u) => ({ ...u, password: newPassword }));
+      if (!updated) return "authErrorInvalid";
+      localStorage.setItem(SESSION_KEY, existing.id);
+      setUser(updated);
+      return null;
+    }
+
+    const username = "antonnbot2005";
+    const newUser: StoredUser = {
+      id: `user-${Date.now()}`,
+      username,
+      email: email.trim().toLowerCase(),
+      password: newPassword,
+      avatar: `https://picsum.photos/seed/${username}/200/200`,
+      channelSlug: normalizeChannelSlug(username),
+      subscriptions: [],
+      follows: [],
+      friends: [],
+      tips: [],
+    };
+    users.push(newUser);
+    saveUsers(users);
+    localStorage.setItem(SESSION_KEY, newUser.id);
+    setUser(toPublicUser(newUser));
+    return null;
+  }, []);
+
   const changePassword = useCallback(
     (currentPassword: string, newPassword: string): TranslationKey | null => {
       if (!user) return "authErrorInvalid";
@@ -366,6 +403,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         updateAvatar,
         updateProfile,
         changePassword,
+        recoverAdminAccount,
       }}
     >
       {children}
