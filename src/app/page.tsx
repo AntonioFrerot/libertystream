@@ -1,17 +1,11 @@
 import { MainLayout } from "@/components/layout/MainLayout";
-
 import { TwitchFeaturedCarousel } from "@/components/home/TwitchFeaturedCarousel";
-
 import { CategoryCarousel } from "@/components/home/CategoryCarousel";
-
 import { HomeCategoryRows, TopClipsRow } from "@/components/home/CategoryStreamRow";
-
-
+import { AdminHomeButton } from "@/components/home/AdminHomeButton";
 
 export default function HomePage() {
-
   return (
-
     <MainLayout>
       <TwitchFeaturedCarousel />
 
@@ -22,9 +16,8 @@ export default function HomePage() {
         </div>
         <TopClipsRow />
       </div>
+      <AdminHomeButton />
     </MainLayout>
-
   );
-
 }
 

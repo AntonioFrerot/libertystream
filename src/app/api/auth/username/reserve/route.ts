@@ -19,10 +19,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "authErrorInvalid" }, { status: 400 });
   }
 
-  const result = await reserveUsername({ userId, username, email });
-  if (!result.ok) {
-    return NextResponse.json({ error: result.error }, { status: 409 });
-  }
+  try {
+    const result = await reserveUsername({ userId, username, email });
+    if (!result.ok) {
+      return NextResponse.json({ error: result.error }, { status: 409 });
+    }
 
-  return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true });
+  } catch {
+    return NextResponse.json({ error: "authErrorServer" }, { status: 500 });
+  }
 }

@@ -19,8 +19,15 @@ interface UsernameRegistryFile {
   entries: UsernameRegistryEntry[];
 }
 
-const REGISTRY_DIR = path.join(process.cwd(), "data");
-const REGISTRY_PATH = path.join(REGISTRY_DIR, "username-registry.json");
+const LOCAL_REGISTRY_PATH = path.join(process.cwd(), "data", "username-registry.json");
+const TMP_REGISTRY_PATH = path.join("/tmp", "libertystream-username-registry.json");
+
+const memoryRegistry: UsernameRegistryFile = { entries: [] };
+let memoryHydrated = false;
+
+function registryPaths(): string[] {
+  return process.env.VERCEL ? [TMP_REGISTRY_PATH] : [LOCAL_REGISTRY_PATH, TMP_REGISTRY_PATH];
+}
 
 let writeQueue: Promise<void> = Promise.resolve();
 
@@ -34,22 +41,38 @@ async function withRegistryLock<T>(operation: () => Promise<T>): Promise<T> {
 }
 
 async function ensureRegistryFile(): Promise<UsernameRegistryFile> {
-  await fs.mkdir(REGISTRY_DIR, { recursive: true });
-  try {
-    const raw = await fs.readFile(REGISTRY_PATH, "utf8");
-    const parsed = JSON.parse(raw) as UsernameRegistryFile;
-    if (!Array.isArray(parsed.entries)) return { entries: [] };
-    return parsed;
-  } catch {
-    const empty: UsernameRegistryFile = { entries: [] };
-    await fs.writeFile(REGISTRY_PATH, JSON.stringify(empty, null, 2), "utf8");
-    return empty;
+  if (memoryHydrated) return memoryRegistry;
+
+  for (const filePath of registryPaths()) {
+    try {
+      const raw = await fs.readFile(filePath, "utf8");
+      const parsed = JSON.parse(raw) as UsernameRegistryFile;
+      memoryRegistry.entries = Array.isArray(parsed.entries) ? parsed.entries : [];
+      memoryHydrated = true;
+      return memoryRegistry;
+    } catch {
+      // Fichier absent ou illisible — on tente le chemin suivant.
+    }
   }
+
+  memoryHydrated = true;
+  return memoryRegistry;
 }
 
 async function saveRegistry(registry: UsernameRegistryFile): Promise<void> {
-  await fs.mkdir(REGISTRY_DIR, { recursive: true });
-  await fs.writeFile(REGISTRY_PATH, JSON.stringify(registry, null, 2), "utf8");
+  memoryRegistry.entries = registry.entries;
+  memoryHydrated = true;
+  const payload = JSON.stringify(registry, null, 2);
+
+  for (const filePath of registryPaths()) {
+    try {
+      await fs.mkdir(path.dirname(filePath), { recursive: true });
+      await fs.writeFile(filePath, payload, "utf8");
+      return;
+    } catch {
+      // Sur Vercel le disque du projet est en lecture seule : on passe à /tmp.
+    }
+  }
 }
 
 function findSlugConflict(
@@ -142,6 +165,21 @@ export async function releaseUsername(userId: string): Promise<void> {
     const nextEntries = registry.entries.filter((entry) => entry.userId !== userId);
     if (nextEntries.length === registry.entries.length) return;
     await saveRegistry({ entries: nextEntries });
+  });
+}
+
+export async function listAllRegisteredUsers(): Promise<UsernameRegistryEntry[]> {
+  const registry = await ensureRegistryFile();
+  return [...registry.entries].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
+export async function deleteRegisteredUser(userId: string): Promise<boolean> {
+  return withRegistryLock(async () => {
+    const registry = await ensureRegistryFile();
+    const nextEntries = registry.entries.filter((entry) => entry.userId !== userId);
+    if (nextEntries.length === registry.entries.length) return false;
+    await saveRegistry({ entries: nextEntries });
+    return true;
   });
 }
 

@@ -145,11 +145,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         });
 
         const payload = (await response.json()) as { error?: TranslationKey };
-        if (!response.ok) {
+        if (!response.ok && response.status < 500) {
           return payload.error ?? "authErrorUsernameTaken";
         }
       } catch {
-        return "authErrorServer";
+        // Compte local quand même : le registre serveur n'est pas bloquant.
       }
 
       const newUser: StoredUser = {
