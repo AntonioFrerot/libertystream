@@ -33,6 +33,11 @@ export function scoreHand(cards: Card[]): HandScore {
   return { total, isSoft, isBlackjack, isBust };
 }
 
+/** Après un split d'as : une carte chacune, plus de tirage. */
+export function isSplitAcesHand(hand: Hand): boolean {
+  return Boolean(hand.isSplitHand && hand.cards[0]?.rank === "A");
+}
+
 export function canSplitHand(hand: Hand): boolean {
   if (hand.cards.length !== 2 || hand.isSplitHand) return false;
   return rankValue(hand.cards[0].rank) === rankValue(hand.cards[1].rank);

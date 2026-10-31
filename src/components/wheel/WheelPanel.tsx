@@ -80,7 +80,8 @@ export function WheelPanel({ active = true }: WheelPanelProps) {
     label: String(value),
   }));
 
-  const setMaxBet = () => setBetAmount(Math.max(LIBERTY_MIN_BET, roundLiberty(balance)));
+  const setMaxBet = () =>
+    setBetAmount(Math.max(LIBERTY_MIN_BET, roundLiberty(getLibertyBalance())));
 
   const spinOnce = async (showResultToast = true) => {
     const spendErr = spendLiberty(betAmount);

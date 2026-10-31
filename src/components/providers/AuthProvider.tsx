@@ -45,6 +45,7 @@ interface AuthContextValue {
   isFollowing: (streamerUsername: string) => boolean;
   updateAvatar: (avatar: string) => void;
   updateProfile: (data: { displayName?: string; bio?: string; banner?: string }) => void;
+  changeUsername: (username: string) => Promise<string | null>;
   changePassword: (currentPassword: string, newPassword: string) => TranslationKey | null;
   recoverAdminAccount: (email: string, newPassword: string) => string | null;
 }
@@ -334,6 +335,68 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [user]
   );
 
+  const changeUsername = useCallback(
+    async (username: string): Promise<string | null> => {
+      if (!user) return "authErrorInvalid";
+
+      const trimmedUsername = username.trim();
+      const formatError = validateUsernameFormat(trimmedUsername);
+      if (formatError) return formatError;
+      if (isReservedUsername(trimmedUsername)) return "authErrorUsernameTaken";
+
+      const slug = normalizeUsernameKey(trimmedUsername);
+      if (slug === user.channelSlug && trimmedUsername === user.username) return null;
+
+      const users = loadUsers();
+      if (
+        users.some(
+          (entry) =>
+            entry.id !== user.id &&
+            (entry.username.toLowerCase() === trimmedUsername.toLowerCase() ||
+              normalizeUsernameKey(entry.username) === slug),
+        )
+      ) {
+        return "authErrorUsernameTaken";
+      }
+
+      try {
+        const response = await fetch("/api/auth/username/rename", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: user.id,
+            username: trimmedUsername,
+            email: user.email,
+          }),
+        });
+        const payload = (await response.json()) as { error?: TranslationKey };
+        if (!response.ok && response.status < 500) {
+          return payload.error ?? "authErrorUsernameTaken";
+        }
+      } catch {
+        // Le changement local reste possible si le serveur n'est pas joignable.
+      }
+
+      const updated = updateUser(user.id, (entry) => ({
+        ...entry,
+        username: trimmedUsername,
+        channelSlug: normalizeChannelSlug(trimmedUsername),
+        displayName:
+          !entry.displayName || entry.displayName === entry.username
+            ? trimmedUsername
+            : entry.displayName,
+      }));
+      if (updated) {
+        setUser(updated);
+        window.dispatchEvent(
+          new CustomEvent("libertystream-profile-updated", { detail: { userId: user.id } }),
+        );
+      }
+      return null;
+    },
+    [user],
+  );
+
   const recoverAdminAccount = useCallback((email: string, newPassword: string): string | null => {
     if (!isAdminEmail(email)) return "authErrorForgotNotAdmin";
     if (newPassword.length < 6) return "authErrorPasswordShort";
@@ -402,6 +465,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isFollowing,
         updateAvatar,
         updateProfile,
+        changeUsername,
         changePassword,
         recoverAdminAccount,
       }}

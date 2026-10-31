@@ -1,5 +1,5 @@
 import { createShoe, drawCard } from "./deck";
-import { canSplitHand, compareHands, dealerShouldHit, scoreHand } from "./hand";
+import { canSplitHand, compareHands, dealerShouldHit, isSplitAcesHand, scoreHand } from "./hand";
 import { resolveAllSideBets } from "./sideBets";
 import type { GameState, Hand, HandOutcome, RoundResult } from "./types";
 
@@ -283,7 +283,7 @@ export function takeInsurance(state: GameState, amount: number): GameState {
 
 export function hit(state: GameState): GameState {
   const hand = activeHand(state);
-  if (!hand || state.phase !== "playing") return state;
+  if (!hand || state.phase !== "playing" || isSplitAcesHand(hand)) return state;
 
   const next = cloneState(state);
   const current = next.playerHands[next.activeHandIndex];
@@ -301,7 +301,9 @@ export function stand(state: GameState): GameState {
 
 export function doubleDown(state: GameState): GameState {
   const hand = activeHand(state);
-  if (!hand || state.phase !== "playing" || hand.cards.length !== 2) return state;
+  if (!hand || state.phase !== "playing" || hand.cards.length !== 2 || isSplitAcesHand(hand)) {
+    return state;
+  }
 
   const next = cloneState(state);
   const current = next.playerHands[next.activeHandIndex];
@@ -325,6 +327,7 @@ export function split(state: GameState): GameState {
   const next = cloneState(state);
   const current = next.playerHands[splitIndex];
   const [first, second] = current.cards;
+  if (!first || !second) return state;
   const bet = current.bet;
 
   const [cardA, shoeA] = drawCard(next.shoe);
@@ -345,14 +348,25 @@ export function split(state: GameState): GameState {
   next.activeHandIndex = splitIndex;
   next.totalWagered += bet;
 
-  const firstScore = scoreHand(next.playerHands[splitIndex].cards);
-  const secondScore = scoreHand(next.playerHands[splitIndex + 1].cards);
+  const splittingAces = first.rank === "A" && second.rank === "A";
 
-  if (firstScore.isBlackjack) {
-    next.playerHands[splitIndex].outcome = "blackjack";
-  }
-  if (secondScore.isBlackjack) {
-    next.playerHands[splitIndex + 1].outcome = "blackjack";
+  if (splittingAces) {
+    for (const index of [splitIndex, splitIndex + 1]) {
+      const splitHand = next.playerHands[index];
+      if (!splitHand) continue;
+      const score = scoreHand(splitHand.cards);
+      splitHand.outcome = score.isBust ? "bust" : "stand";
+    }
+  } else {
+    const firstScore = scoreHand(next.playerHands[splitIndex].cards);
+    const secondScore = scoreHand(next.playerHands[splitIndex + 1].cards);
+
+    if (firstScore.isBlackjack) {
+      next.playerHands[splitIndex].outcome = "blackjack";
+    }
+    if (secondScore.isBlackjack) {
+      next.playerHands[splitIndex + 1].outcome = "blackjack";
+    }
   }
 
   if (next.playerHands.every((h) => h.outcome !== "playing")) {
@@ -509,6 +523,7 @@ export function resolvePayouts(state: GameState): RoundResult[] {
 export function canHit(state: GameState): boolean {
   const hand = activeHand(state);
   if (state.phase !== "playing" || hand?.outcome !== "playing") return false;
+  if (isSplitAcesHand(hand)) return false;
   return scoreHand(hand.cards).total < 21;
 }
 
@@ -520,7 +535,13 @@ export function canDouble(state: GameState): boolean {
   const hand = activeHand(state);
   return (
     state.phase === "playing" &&
-    Boolean(hand && hand.outcome === "playing" && hand.cards.length === 2 && !hand.isDoubled)
+    Boolean(
+      hand &&
+        hand.outcome === "playing" &&
+        hand.cards.length === 2 &&
+        !hand.isDoubled &&
+        !isSplitAcesHand(hand)
+    )
   );
 }
 

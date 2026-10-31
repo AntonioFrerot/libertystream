@@ -243,7 +243,8 @@ export function PlinkoGame({ backHref = "/jeux" }: { backHref?: string }) {
 
   const controlsLocked = hasActiveBalls || autoRunning;
 
-  const setMaxBet = () => setBetAmount(Math.max(LIBERTY_MIN_BET, roundLiberty(balance)));
+  const setMaxBet = () =>
+    setBetAmount(Math.max(LIBERTY_MIN_BET, roundLiberty(getLibertyBalance())));
 
   return (
     <div className="plinko-game">

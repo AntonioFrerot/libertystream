@@ -1064,6 +1064,26 @@
     .footer-home-compact {
       margin-top: -1rem;
     }
+
+    /* Un seul scroller vertical : le document, pas le layout interne. */
+    html {
+      overflow-x: clip;
+      overflow-y: auto;
+    }
+
+    body {
+      height: auto;
+      overflow: visible;
+    }
+
+    .main-layout-content {
+      overflow: visible;
+    }
+
+    .home-h-scroll {
+      overflow-y: hidden;
+      overscroll-behavior-y: auto;
+    }
   }
 
   /* Settings â€” style Kick */

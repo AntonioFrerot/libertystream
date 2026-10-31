@@ -159,6 +159,52 @@ export async function reserveUsername(input: {
   });
 }
 
+export async function renameUsername(input: {
+  userId: string;
+  username: string;
+  email: string;
+}): Promise<{ ok: true } | { ok: false; error: TranslationKey }> {
+  const trimmedUsername = input.username.trim();
+  const trimmedEmail = input.email.trim();
+
+  const formatError = validateUsernameFormat(trimmedUsername);
+  if (formatError) return { ok: false, error: formatError };
+
+  const slug = normalizeUsernameKey(trimmedUsername);
+  if (getReservedUsernameSlugs().has(slug)) {
+    return { ok: false, error: "authErrorUsernameTaken" };
+  }
+
+  return withRegistryLock(async () => {
+    const registry = await ensureRegistryFile();
+
+    if (findSlugConflict(registry, slug, input.userId)) {
+      return { ok: false, error: "authErrorUsernameTaken" as const };
+    }
+
+    const index = registry.entries.findIndex((entry) => entry.userId === input.userId);
+    if (index >= 0) {
+      registry.entries[index] = {
+        ...registry.entries[index],
+        username: trimmedUsername,
+        slug,
+        email: trimmedEmail,
+      };
+    } else {
+      registry.entries.push({
+        userId: input.userId,
+        username: trimmedUsername,
+        slug,
+        email: trimmedEmail,
+        createdAt: new Date().toISOString(),
+      });
+    }
+
+    await saveRegistry(registry);
+    return { ok: true as const };
+  });
+}
+
 export async function releaseUsername(userId: string): Promise<void> {
   await withRegistryLock(async () => {
     const registry = await ensureRegistryFile();

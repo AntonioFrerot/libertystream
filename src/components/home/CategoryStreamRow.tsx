@@ -57,7 +57,7 @@ export function CategoryStreamRow({ categoryId, title, viewAllHref }: CategorySt
           </button>
         </div>
       </div>
-      <div ref={scrollRef} className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide lg:grid lg:grid-cols-4 lg:overflow-visible">
+      <div ref={scrollRef} className="home-h-scroll flex gap-3 overflow-x-auto overflow-y-hidden pb-2 scrollbar-hide lg:grid lg:grid-cols-4 lg:overflow-visible">
         {live.map((s) => (
           <Link key={s.id} href={`/${s.username}`} className="flex-shrink-0 w-[280px] lg:w-auto group">
             <div className="relative aspect-video rounded-lg overflow-hidden bg-kick-surface mb-2">
@@ -101,7 +101,7 @@ export function TopClipsRow() {
         <Link href="/clips" className="font-display text-base font-bold hover:text-kick-green transition-colors">{t("topClips")}</Link>
         <Link href="/clips" className="text-sm text-white/50 hover:text-white transition-colors">{t("viewAll")}</Link>
       </div>
-      <div className="flex gap-3 overflow-x-auto pb-0 md:pb-2 scrollbar-hide">
+      <div className="home-h-scroll flex gap-3 overflow-x-auto overflow-y-hidden pb-0 md:pb-2 scrollbar-hide">
         {sorted.map((clip, index) => (
           <Link key={clip.id} href={`/clip/${clip.id}`} className="flex-shrink-0 w-[240px] sm:w-[280px] group">
             <div className="relative aspect-video rounded-lg overflow-hidden bg-kick-surface mb-2">

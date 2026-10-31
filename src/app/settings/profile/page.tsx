@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useToast } from "@/components/ui/Toast";
+import type { TranslationKey } from "@/lib/i18n/translations";
 import { AvatarUploader } from "@/components/user/AvatarUploader";
 import {
   SettingsField,
@@ -15,26 +16,37 @@ import {
 
 export default function SettingsProfilePage() {
   const { t } = useLanguage();
-  const { user, updateProfile } = useAuth();
+  const { user, updateProfile, changeUsername } = useAuth();
   const { showToast } = useToast();
   const [displayName, setDisplayName] = useState(user?.displayName ?? user?.username ?? "");
+  const [username, setUsername] = useState(user?.username ?? "");
   const [bio, setBio] = useState(user?.bio ?? "");
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (user) {
       setDisplayName(user.displayName ?? user.username);
+      setUsername(user.username);
       setBio(user.bio ?? "");
     }
   }, [user]);
 
   if (!user) return null;
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    setSaving(true);
+    const usernameError = await changeUsername(username);
+    if (usernameError) {
+      showToast(t(usernameError as TranslationKey));
+      setSaving(false);
+      return;
+    }
     updateProfile({
-      displayName: displayName.trim() || user.username,
+      displayName: displayName.trim() || username.trim() || user.username,
       bio: bio.trim(),
     });
     showToast(t("settingsSaved"));
+    setSaving(false);
   };
 
   return (
@@ -49,7 +61,14 @@ export default function SettingsProfilePage() {
 
       <div className="space-y-5">
         <SettingsField label={t("settingsUsername")} hint={t("settingsUsernameHint")}>
-          <SettingsInput value={user.username} disabled />
+          <SettingsInput
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            maxLength={25}
+            minLength={3}
+            pattern="[a-zA-Z0-9_]+"
+            autoComplete="username"
+          />
         </SettingsField>
 
         <SettingsField label={t("settingsDisplayName")} hint={t("settingsDisplayNameHint")}>
@@ -75,7 +94,7 @@ export default function SettingsProfilePage() {
         </SettingsField>
       </div>
 
-      <SettingsSaveButton label={t("save")} onClick={handleSave} />
+      <SettingsSaveButton label={t("save")} onClick={() => void handleSave()} disabled={saving} />
     </SettingsSection>
   );
 }

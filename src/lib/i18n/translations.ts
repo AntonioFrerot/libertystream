@@ -245,7 +245,7 @@ export const translations = {
       "Placez votre mise.\nLancez la bille.\nElle atterrit sur un multiplicateur.\nGain = mise × multiplicateur.", 
     blackjackRulesTitle: "Blackjack", 
     blackjackRulesBody:
-      "Approchez 21 sans dépasser.\nLe croupier tire jusqu'à 17.\nBattez sa main pour gagner.\nBlackjack = As + 10.", 
+      "Approchez 21 sans dépasser.\nLe croupier tire jusqu'à 17.\nBattez sa main pour gagner.\nBlackjack = As + 10.\nSplit d'as : une carte par as, puis plus de tirage.", 
     hiloRulesTitle: "Hilo", 
     hiloRulesBody:
       "Plus haut ou plus bas que la carte ?\nBonne réponse → multiplicateur monte.\nEncaissez quand vous voulez.\nMauvaise réponse → perdu.\nPasser = nouvelle carte, sans risque.", 
@@ -536,7 +536,7 @@ export const translations = {
     settingsProfilePicture: "Photo de profil", 
     settingsProfilePictureHint: "JPG, PNG, WebP ou GIF, max 2 Mo.", 
     settingsUsername: "Nom d'utilisateur", 
-    settingsUsernameHint: "Votre URL de chaîne est basée sur ce nom.", 
+    settingsUsernameHint: "3 à 25 caractères, lettres, chiffres et _. L'URL de votre chaîne change aussi.", 
     settingsDisplayName: "Nom affiché", 
     settingsDisplayNameHint: "Visible dans le chat et sur votre chaîne.", 
     settingsBio: "À propos", 
@@ -917,7 +917,7 @@ export const translations = {
       "Place your bet.\nDrop the ball.\nIt lands on a multiplier.\nPayout = bet × multiplier.", 
     blackjackRulesTitle: "Blackjack", 
     blackjackRulesBody:
-      "Get close to 21 without busting.\nDealer hits until 17.\nBeat the dealer to win.\nBlackjack = Ace + 10.", 
+      "Get close to 21 without busting.\nDealer hits until 17.\nBeat the dealer to win.\nBlackjack = Ace + 10.\nSplit aces: one card per ace, then no further hits.", 
     hiloRulesTitle: "HiLo", 
     hiloRulesBody:
       "Higher or lower than the card?\nCorrect guess → multiplier goes up.\nCash out anytime.\nWrong guess → you lose.\nSkip = new card, no risk.", 
@@ -1199,7 +1199,7 @@ export const translations = {
     settingsProfilePicture: "Profile picture", 
     settingsProfilePictureHint: "JPG, PNG, WebP or GIF, max 2 MB.", 
     settingsUsername: "Username", 
-    settingsUsernameHint: "Your channel URL is based on this name.", 
+    settingsUsernameHint: "3-25 characters, letters, numbers and _. Your channel URL updates too.", 
     settingsDisplayName: "Display name", 
     settingsDisplayNameHint: "Shown in chat and on your channel.", 
     settingsBio: "About", 
