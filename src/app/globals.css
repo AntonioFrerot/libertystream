@@ -1055,16 +1055,8 @@
     }
   }
 
-  /* Accueil â€” moins d'espace avant le footer sur mobile */
+  /* Accueil mobile : un seul scroller, footer au-dessus de la barre du bas */
   @media (max-width: 1023px) {
-    .home-page {
-      margin-bottom: calc(-1 * (var(--mobile-bottom-nav-height) + 3rem));
-    }
-
-    .footer-home-compact {
-      margin-top: -1rem;
-    }
-
     /* Un seul scroller vertical : le document, pas le layout interne. */
     html {
       overflow-x: clip;

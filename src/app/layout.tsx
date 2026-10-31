@@ -45,8 +45,10 @@ export default function RootLayout({
         <Providers>
           <AgeGate>
             <Navbar />
-            <main className="flex-1 min-w-0 pb-[calc(4.25rem+env(safe-area-inset-bottom,0px))] lg:pb-0">{children}</main>
-            <ConditionalFooter />
+            <div className="flex min-w-0 flex-1 flex-col pb-[calc(var(--mobile-bottom-nav-height)+env(safe-area-inset-bottom,0px)+0.75rem)] lg:pb-0">
+              <main className="min-w-0 flex-1">{children}</main>
+              <ConditionalFooter />
+            </div>
           </AgeGate>
         </Providers>
       </body>
